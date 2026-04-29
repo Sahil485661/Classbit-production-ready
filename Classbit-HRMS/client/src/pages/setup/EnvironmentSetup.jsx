@@ -20,6 +20,11 @@ const EnvironmentSetup = () => {
     const [smtpUser, setSmtpUser] = useState('');
     const [smtpPassword, setSmtpPassword] = useState('');
 
+    // Cloudinary Data
+    const [cloudinaryName, setCloudinaryName] = useState('');
+    const [cloudinaryKey, setCloudinaryKey] = useState('');
+    const [cloudinarySecret, setCloudinarySecret] = useState('');
+
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [successMessage, setSuccessMessage] = useState(null);
@@ -50,7 +55,10 @@ const EnvironmentSetup = () => {
                 dbName,
                 smtpUser,
                 smtpPassword,
-                nodeEnv
+                nodeEnv,
+                cloudinaryName,
+                cloudinaryKey,
+                cloudinarySecret
             };
 
             const response = await axios.post('/api/setup/env', payload);
@@ -119,7 +127,7 @@ const EnvironmentSetup = () => {
                             Environment Setup
                         </h1>
                         <p className="text-[var(--text-secondary)] mt-2">
-                            {step === 1 ? 'Step 1: Database Configuration' : 'Step 2: SMTP Configuration'}
+                            {step === 1 ? 'Step 1: Database Configuration' : 'Step 2: External Services Configuration'}
                         </p>
                     </div>
 
@@ -256,9 +264,12 @@ const EnvironmentSetup = () => {
                                 >
                                     <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mb-6">
                                         <p className="text-sm text-[var(--text-secondary)]">
-                                            SMTP credentials are required for sending system emails (like password resets). You can skip these for now and add them later.
+                                            SMTP and Cloudinary credentials are required for sending emails and image uploads. You can skip these for now and add them later.
                                         </p>
                                     </div>
+
+                                    <div className="space-y-4">
+                                        <h3 className="text-sm font-semibold text-blue-500 uppercase tracking-wider">SMTP Settings</h3>
 
                                     <div>
                                         <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">SMTP Email</label>
@@ -285,6 +296,50 @@ const EnvironmentSetup = () => {
                                                 className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg py-3 pl-11 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-[var(--text-primary)]"
                                                 placeholder="••••••••"
                                             />
+                                        </div>
+                                    </div>
+                                    </div>
+
+                                    <div className="space-y-4 mt-8 pt-4 border-t border-[var(--border-color)]">
+                                        <h3 className="text-sm font-semibold text-blue-500 uppercase tracking-wider">Cloudinary Settings</h3>
+                                        <div>
+                                            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">Cloud Name</label>
+                                            <div className="relative">
+                                                <Globe className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
+                                                <input
+                                                    type="text"
+                                                    value={cloudinaryName}
+                                                    onChange={(e) => setCloudinaryName(e.target.value)}
+                                                    className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg py-3 pl-11 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-[var(--text-primary)]"
+                                                    placeholder="your-cloud-name"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">API Key</label>
+                                            <div className="relative">
+                                                <KeyRound className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
+                                                <input
+                                                    type="text"
+                                                    value={cloudinaryKey}
+                                                    onChange={(e) => setCloudinaryKey(e.target.value)}
+                                                    className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg py-3 pl-11 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-[var(--text-primary)]"
+                                                    placeholder="123456789012345"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-[var(--text-primary)] mb-2">API Secret</label>
+                                            <div className="relative">
+                                                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[var(--text-muted)]" />
+                                                <input
+                                                    type="password"
+                                                    value={cloudinarySecret}
+                                                    onChange={(e) => setCloudinarySecret(e.target.value)}
+                                                    className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-lg py-3 pl-11 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-[var(--text-primary)]"
+                                                    placeholder="••••••••••••••••"
+                                                />
+                                            </div>
                                         </div>
                                     </div>
 

@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 5000;
 
-if (!fs.existsSync('.env')) {
+if (!fs.existsSync('.env') && !process.env.DB_HOST) {
     // ==========================================
     // SETUP MODE (No .env file found)
     // ==========================================
@@ -30,7 +30,7 @@ if (!fs.existsSync('.env')) {
     });
 
     app.post('/api/setup/env', (req, res) => {
-        const { dbHost, dbPort, dbUser, dbPassword, dbName, smtpUser, smtpPassword, nodeEnv } = req.body;
+        const { dbHost, dbPort, dbUser, dbPassword, dbName, smtpUser, smtpPassword, nodeEnv, cloudinaryName, cloudinaryKey, cloudinarySecret } = req.body;
         
         // Auto generate 64-character hex secret
         const JWT_SECRET = crypto.randomBytes(32).toString('hex');
@@ -45,6 +45,9 @@ JWT_SECRET=${JWT_SECRET}
 SMTP_USER=${smtpUser || ''}
 SMTP_PASSWORD=${smtpPassword || ''}
 NODE_ENV=${nodeEnv || 'development'}
+CLOUDINARY_CLOUD_NAME=${cloudinaryName || ''}
+CLOUDINARY_API_KEY=${cloudinaryKey || ''}
+CLOUDINARY_API_SECRET=${cloudinarySecret || ''}
 `;
 
         try {
@@ -53,10 +56,9 @@ NODE_ENV=${nodeEnv || 'development'}
             
             console.log("🔄 .env file created. Restarting the server...");
             
-            // Touch index.js to explicitly force nodemon to restart
+            // Exit process to allow Render to restart it
             setTimeout(() => {
-                const now = new Date();
-                fs.utimesSync(__filename, now, now);
+                process.exit(1);
             }, 500);
         } catch (error) {
             res.status(500).json({ message: 'Failed to write .env file', error: error.message });
