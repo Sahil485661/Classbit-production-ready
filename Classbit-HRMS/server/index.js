@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
 const crypto = require('crypto');
+const path = require('path');
 
 const app = express();
 
@@ -62,6 +63,12 @@ NODE_ENV=${nodeEnv || 'development'}
         }
     });
 
+    // Serve frontend in setup mode
+    app.use(express.static(path.join(__dirname, '../client/dist')));
+    app.get(/.*/, (req, res) => {
+        res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+    });
+
     app.listen(PORT, () => {
         console.log(`Setup Server is running on port ${PORT}`);
     });
@@ -99,10 +106,12 @@ NODE_ENV=${nodeEnv || 'development'}
     app.use('/api/email-actions', require('./routes/emailActionsRoutes'));
     app.use('/api/images', require('./routes/imageRoutes'));
 
-    app.use('/uploads', express.static('uploads'));
+    app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-    app.get('/', (req, res) => {
-        res.json({ message: 'Welcome to Classbit HRMS API' });
+    // Serve frontend in normal mode
+    app.use(express.static(path.join(__dirname, '../client/dist')));
+    app.get(/.*/, (req, res) => {
+        res.sendFile(path.join(__dirname, '../client/dist/index.html'));
     });
 
     // Error handling middleware

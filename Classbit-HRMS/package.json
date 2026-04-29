@@ -1,0 +1,9 @@
+{
+  "name": "classbit-hrms-root",
+  "version": "1.0.0",
+  "description": "Root package for Classbit HRMS",
+  "scripts": {
+    "build": "cd client && npm install && npm run build",
+    "start": "cd server && npm install && node index.js"
+  }
+}
