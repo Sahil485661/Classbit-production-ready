@@ -105,10 +105,10 @@ const AppLayout = ({ children }) => {
   useEffect(() => {
       const fetchCompany = async () => {
           try {
-              const res = await axios.get('http://localhost:5000/api/setup/company');
+              const res = await axios.get('/api/setup/company');
               setCompany({
                   name: res.data.name || 'Classbit Connect',
-                  logo: res.data.logoUrl ? `http://localhost:5000/uploads/${res.data.logoUrl}` : '/logo.png'
+                  logo: res.data.logoUrl ? `/uploads/${res.data.logoUrl}` : '/logo.png'
               });
           } catch (err) {
               console.error('Failed to load company details', err);
@@ -175,7 +175,7 @@ const AppLayout = ({ children }) => {
       email: user?.email,
       role: user?.role,
       avatar: user?.profilePicture && user.profilePicture !== 'null' 
-          ? (user.profilePicture.startsWith('http') ? user.profilePicture : `http://localhost:5000/uploads/${user.profilePicture}`) 
+          ? (user.profilePicture.startsWith('http') ? user.profilePicture : `/uploads/${user.profilePicture}`) 
           : null
   };
 
@@ -213,7 +213,7 @@ const SetupGuard = ({ children }) => {
       const checkSetup = async () => {
           try {
               // Append timestamp to prevent aggressive browser caching of the setup status
-              const response = await axios.get(`http://localhost:5000/api/setup/status?t=${new Date().getTime()}`);
+              const response = await axios.get(`/api/setup/status?t=${new Date().getTime()}`);
               if (response.data.envRequired) {
                   setStatus({ loading: false, setupRequired: true, envRequired: true });
               } else if (response.data.setupRequired) {

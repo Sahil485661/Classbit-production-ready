@@ -21,7 +21,7 @@ const TaskDetailsPage = () => {
     const fetchTaskDetails = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get(`http://localhost:5000/api/tasks/${id}`, {
+            const res = await axios.get(`/api/tasks/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setTask(res.data);
@@ -43,7 +43,7 @@ const TaskDetailsPage = () => {
         setSubmittingComment(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post(`http://localhost:5000/api/tasks/${id}/comments`, { text: newComment }, {
+            const res = await axios.post(`/api/tasks/${id}/comments`, { text: newComment }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             // Update UI optimistically or softly
@@ -63,7 +63,7 @@ const TaskDetailsPage = () => {
         setStatusUpdating(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`http://localhost:5000/api/tasks/${id}/status`, { status: newStatus }, {
+            await axios.patch(`/api/tasks/${id}/status`, { status: newStatus }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             // Re-fetch to get accurate activity logs synced
@@ -85,7 +85,7 @@ const TaskDetailsPage = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.post(`http://localhost:5000/api/tasks/${id}/attachments`, formData, {
+            await axios.post(`/api/tasks/${id}/attachments`, formData, {
                 headers: { 
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
@@ -313,7 +313,7 @@ const TaskDetailsPage = () => {
                                                 </div>
                                             </div>
                                             <a 
-                                                href={`http://localhost:5000${file.fileUrl}`} 
+                                                href={`${file.fileUrl}`} 
                                                 target="_blank" 
                                                 rel="noreferrer"
                                                 className="p-1.5 text-blue-500 bg-blue-500/10 hover:bg-blue-500 hover:text-white rounded transition-colors opacity-0 group-hover:opacity-100"

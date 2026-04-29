@@ -27,7 +27,7 @@ const AccountingPage = () => {
     const fetchData = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/accounting', {
+            const res = await axios.get('/api/accounting', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setTransactions(res.data);
@@ -68,11 +68,11 @@ const AccountingPage = () => {
         try {
             const token = localStorage.getItem('token');
             if (editId) {
-                await axios.put(`http://localhost:5000/api/accounting/${editId}`, newTx, {
+                await axios.put(`/api/accounting/${editId}`, newTx, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             } else {
-                await axios.post('http://localhost:5000/api/accounting', newTx, {
+                await axios.post('/api/accounting', newTx, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             }
@@ -87,7 +87,7 @@ const AccountingPage = () => {
         if (!window.confirm('Are you absolutely sure you want to completely destroy this financial record? This cannot be undone.')) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5000/api/accounting/${id}`, {
+            await axios.delete(`/api/accounting/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchData();

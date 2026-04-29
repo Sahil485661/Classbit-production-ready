@@ -17,7 +17,7 @@ const EmployeeHistory = () => {
     const fetchDeletedEmployees = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/employees/history', {
+            const res = await axios.get('/api/employees/history', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setEmployees(res.data);
@@ -31,7 +31,7 @@ const EmployeeHistory = () => {
     const fetchDepartments = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/employees/departments', {
+            const res = await axios.get('/api/employees/departments', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setDepartments(res.data);
@@ -153,7 +153,7 @@ const EmployeeHistory = () => {
                                                 onClick={() => navigate(`/employees/${emp.id}`)}
                                             >
                                                 {emp.profilePicture ? (
-                                                    <img src={`http://localhost:5000/uploads/${emp.profilePicture}`} alt={`${emp.firstName} ${emp.lastName}`} className="w-10 h-10 rounded-xl object-cover border border-rose-500/30 grayscale group-hover/link:grayscale-0 transition-all shadow-sm" />
+                                                    <img src={`/uploads/${emp.profilePicture}`} alt={`${emp.firstName} ${emp.lastName}`} className="w-10 h-10 rounded-xl object-cover border border-rose-500/30 grayscale group-hover/link:grayscale-0 transition-all shadow-sm" />
                                                 ) : (
                                                     <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-500 font-bold border border-rose-500/30 transition-colors shadow-sm">
                                                         {emp.firstName?.[0]}{emp.lastName?.[0]}

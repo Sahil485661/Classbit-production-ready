@@ -10,7 +10,7 @@ const StatutorySettings = () => {
     const fetchConfig = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/setup/compliance', {
+            const res = await axios.get('/api/setup/compliance', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             let data = res.data;
@@ -38,7 +38,7 @@ const StatutorySettings = () => {
         setSaving(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.put('http://localhost:5000/api/setup/compliance', config, {
+            await axios.put('/api/setup/compliance', config, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert('Statutory compliance settings saved successfully!');

@@ -56,9 +56,9 @@ const AddEmployeeForm = ({ onSuccess, onCancel, initialData = null }) => {
             try {
                 const token = localStorage.getItem('token');
                 const [rRes, dRes, eRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/employees/roles', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get('http://localhost:5000/api/employees/departments', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get('http://localhost:5000/api/employees', { headers: { Authorization: `Bearer ${token}` } })
+                    axios.get('/api/employees/roles', { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get('/api/employees/departments', { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get('/api/employees', { headers: { Authorization: `Bearer ${token}` } })
                 ]);
                 setRoles(rRes.data);
                 setDepartments(dRes.data);
@@ -156,8 +156,8 @@ const AddEmployeeForm = ({ onSuccess, onCancel, initialData = null }) => {
         try {
             const token = localStorage.getItem('token');
             const url = initialData
-                ? `http://localhost:5000/api/employees/${initialData.id}`
-                : 'http://localhost:5000/api/employees';
+                ? `/api/employees/${initialData.id}`
+                : '/api/employees';
             const method = initialData ? 'put' : 'post';
 
             const payload = new FormData();

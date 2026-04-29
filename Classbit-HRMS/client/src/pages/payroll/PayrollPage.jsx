@@ -10,7 +10,7 @@ import {
 } from 'lucide-react';
 import Modal from '../../components/Modal';
 
-const API = 'http://localhost:5000/api';
+const API = '/api';
 
 const STATUS_STYLES = {
     Draft:    'bg-amber-500/10 text-amber-500 border border-amber-500/20',

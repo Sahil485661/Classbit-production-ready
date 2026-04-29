@@ -26,8 +26,8 @@ const CreateTaskForm = ({ onSuccess, onCancel }) => {
                 const token = localStorage.getItem('token');
                 const headers = { Authorization: `Bearer ${token}` };
                 const [eRes, dRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/employees', { headers }),
-                    axios.get('http://localhost:5000/api/employees/departments', { headers })
+                    axios.get('/api/employees', { headers }),
+                    axios.get('/api/employees/departments', { headers })
                 ]);
                 setEmployees(eRes.data);
                 setDepartments(dRes.data);
@@ -43,7 +43,7 @@ const CreateTaskForm = ({ onSuccess, onCancel }) => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/api/tasks', { ...formData, assigneeIds: formData.employeeIds }, {
+            await axios.post('/api/tasks', { ...formData, assigneeIds: formData.employeeIds }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             onSuccess();

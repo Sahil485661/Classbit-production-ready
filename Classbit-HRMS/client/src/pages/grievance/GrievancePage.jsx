@@ -26,8 +26,8 @@ const GrievancePage = () => {
         try {
             const token = localStorage.getItem('token');
             const url = (user.role === 'Super Admin' || user.role === 'HR')
-                ? 'http://localhost:5000/api/grievance/all'
-                : 'http://localhost:5000/api/grievance/my';
+                ? '/api/grievance/all'
+                : '/api/grievance/my';
             const res = await axios.get(url, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -47,7 +47,7 @@ const GrievancePage = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/api/grievance/submit', formData, {
+            await axios.post('/api/grievance/submit', formData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setIsAddModalOpen(false);
@@ -62,7 +62,7 @@ const GrievancePage = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`http://localhost:5000/api/grievance/${selectedGrievance.id}/resolve`, resolveData, {
+            await axios.patch(`/api/grievance/${selectedGrievance.id}/resolve`, resolveData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setIsResolveModalOpen(false);

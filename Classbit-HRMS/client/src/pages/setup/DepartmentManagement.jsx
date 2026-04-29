@@ -11,7 +11,7 @@ const DepartmentManagement = () => {
     const fetchDepartments = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/employees/departments', {
+            const res = await axios.get('/api/employees/departments', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setDepartments(res.data);
@@ -30,7 +30,7 @@ const DepartmentManagement = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/api/employees/departments', newDept, {
+            await axios.post('/api/employees/departments', newDept, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setNewDept({ name: '', description: '' });

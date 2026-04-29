@@ -18,7 +18,7 @@ const CompanySettings = () => {
         const fetchSettings = async () => {
             try {
                 const token = localStorage.getItem('token');
-                const res = await axios.get('http://localhost:5000/api/setup/company', {
+                const res = await axios.get('/api/setup/company', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 
@@ -45,7 +45,7 @@ const CompanySettings = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/api/setup/company', {
+            await axios.post('/api/setup/company', {
                 name: settings.companyName,
                 website: settings.website,
                 contactEmail: settings.contactEmail,

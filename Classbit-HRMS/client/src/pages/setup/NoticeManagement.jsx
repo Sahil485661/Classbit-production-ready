@@ -32,7 +32,7 @@ const NoticeManagement = () => {
         try {
             const token = localStorage.getItem('token');
             const headers = { Authorization: `Bearer ${token}` };
-            const noticesRes = await axios.get('http://localhost:5000/api/notices', { headers });
+            const noticesRes = await axios.get('/api/notices', { headers });
             setNotices(noticesRes.data);
         } catch (error) {
             console.error('Error fetching notices:', error);
@@ -52,11 +52,11 @@ const NoticeManagement = () => {
             const payload = { ...formData, eventDate: formData.eventDate || null, expiryDate: formData.expiryDate || null };
             
             if (isEditing) {
-                await axios.put(`http://localhost:5000/api/notices/${editingId}`, payload, {
+                await axios.put(`/api/notices/${editingId}`, payload, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             } else {
-                await axios.post('http://localhost:5000/api/notices', payload, {
+                await axios.post('/api/notices', payload, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             }
@@ -74,7 +74,7 @@ const NoticeManagement = () => {
         if (!window.confirm('Are you sure you want to delete this notice?')) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5000/api/notices/${id}`, {
+            await axios.delete(`/api/notices/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchNotices();

@@ -14,7 +14,7 @@ const UpcomingMeetingsWidget = () => {
     useEffect(() => {
         const fetchMeetings = async () => {
             try {
-                const res = await axios.get('http://localhost:5000/api/meetings', {
+                const res = await axios.get('/api/meetings', {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 const upcoming = res.data

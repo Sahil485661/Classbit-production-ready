@@ -27,8 +27,8 @@ const LeaveManagement = () => {
         try {
             const token = localStorage.getItem('token');
             const url = user.role === 'Employee'
-                ? 'http://localhost:5000/api/leave/my'
-                : 'http://localhost:5000/api/leave/all';
+                ? '/api/leave/my'
+                : '/api/leave/all';
             const res = await axios.get(url, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -97,7 +97,7 @@ const LeaveManagement = () => {
 
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/api/leave/apply', formData, {
+            await axios.post('/api/leave/apply', formData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setIsApplyModalOpen(false);
@@ -112,7 +112,7 @@ const LeaveManagement = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/api/notices', {
+            await axios.post('/api/notices', {
                 type: 'Notice',
                 title: `Company Leave: ${companyLeaveData.title}`,
                 content: companyLeaveData.content,
@@ -132,7 +132,7 @@ const LeaveManagement = () => {
     const handleUpdateStatus = async (id, status) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`http://localhost:5000/api/leave/${id}/status`, { status }, {
+            await axios.patch(`/api/leave/${id}/status`, { status }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchLeaves();
@@ -144,7 +144,7 @@ const LeaveManagement = () => {
     const handleNotifyEmployee = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.post(`http://localhost:5000/api/email-actions/leave/${id}/notify`, {}, {
+            await axios.post(`/api/email-actions/leave/${id}/notify`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert('Employee notified successfully!');

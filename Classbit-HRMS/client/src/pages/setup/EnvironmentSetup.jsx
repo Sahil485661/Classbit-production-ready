@@ -53,7 +53,7 @@ const EnvironmentSetup = () => {
                 nodeEnv
             };
 
-            const response = await axios.post('http://localhost:5000/api/setup/env', payload);
+            const response = await axios.post('/api/setup/env', payload);
             
             if (response.status === 200) {
                 setSuccessMessage("✅ Environment configured successfully. Restarting...");

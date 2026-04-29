@@ -40,18 +40,18 @@ const ReimbursementPage = () => {
             
             // Always fetch categories for the form
             if (categories.length === 0) {
-                const catRes = await axios.get('http://localhost:5000/api/reimbursements/categories', config);
+                const catRes = await axios.get('/api/reimbursements/categories', config);
                 setCategories(catRes.data);
             }
 
             if (activeTab === 'my_claims') {
-                const res = await axios.get('http://localhost:5000/api/reimbursements/my', config);
+                const res = await axios.get('/api/reimbursements/my', config);
                 setClaims(res.data);
             } else if (activeTab === 'hr_approvals') {
-                const res = await axios.get('http://localhost:5000/api/reimbursements/all?status=Pending', config);
+                const res = await axios.get('/api/reimbursements/all?status=Pending', config);
                 setAllClaims(res.data);
             } else if (activeTab === 'finance_approvals') {
-                const res = await axios.get('http://localhost:5000/api/reimbursements/all?status=HR_Approved', config);
+                const res = await axios.get('/api/reimbursements/all?status=HR_Approved', config);
                 setAllClaims(res.data);
             }
         } catch (error) {
@@ -64,7 +64,7 @@ const ReimbursementPage = () => {
     const handleCreateCategory = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:5000/api/reimbursements/categories', {
+            await axios.post('/api/reimbursements/categories', {
                 name: e.target.name.value,
                 description: e.target.desc.value,
                 maxLimit: e.target.limit.value || 0
@@ -88,7 +88,7 @@ const ReimbursementPage = () => {
             data.append('description', formData.description);
             if (formData.receipt) data.append('receipt', formData.receipt);
 
-            await axios.post('http://localhost:5000/api/reimbursements', data, {
+            await axios.post('/api/reimbursements', data, {
                 headers: { 
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
@@ -109,7 +109,7 @@ const ReimbursementPage = () => {
             const remarks = prompt(action.includes('reject') ? 'Reason for rejection:' : 'Remarks (optional):');
             if (action.includes('reject') && !remarks) return alert('Rejection requires a reason.');
 
-            await axios.patch(`http://localhost:5000/api/reimbursements/${id}/status`, { action, remarks }, {
+            await axios.patch(`/api/reimbursements/${id}/status`, { action, remarks }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchData();
@@ -120,7 +120,7 @@ const ReimbursementPage = () => {
 
     const handleNotifyEmployee = async (id) => {
         try {
-            await axios.post(`http://localhost:5000/api/email-actions/reimbursement/${id}/notify`, {}, {
+            await axios.post(`/api/email-actions/reimbursement/${id}/notify`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert('Employee notified successfully!');
@@ -258,7 +258,7 @@ const ReimbursementPage = () => {
                                                 </td>
                                                 <td className="p-4 text-right">
                                                     {claim.receiptUrl ? (
-                                                        <a href={`http://localhost:5000${claim.receiptUrl}`} target="_blank" rel="noopener noreferrer" className="p-2 inline-flex bg-[var(--bg-secondary)] text-blue-500 rounded-lg hover:bg-blue-50">
+                                                        <a href={`${claim.receiptUrl}`} target="_blank" rel="noopener noreferrer" className="p-2 inline-flex bg-[var(--bg-secondary)] text-blue-500 rounded-lg hover:bg-blue-50">
                                                             <FileText className="w-4 h-4" />
                                                         </a>
                                                     ) : <span className="text-xs text-[var(--text-muted)] italic">No receipt</span>}
@@ -319,7 +319,7 @@ const ReimbursementPage = () => {
                                             </div>
                                             
                                             {claim.receiptUrl && (
-                                                <a href={`http://localhost:5000${claim.receiptUrl}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--card-bg)] text-blue-500 rounded-lg border border-[var(--border-color)] hover:bg-blue-50 text-sm font-bold">
+                                                <a href={`${claim.receiptUrl}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 px-3 py-1.5 bg-[var(--card-bg)] text-blue-500 rounded-lg border border-[var(--border-color)] hover:bg-blue-50 text-sm font-bold">
                                                     <Download className="w-4 h-4" /> Receipt
                                                 </a>
                                             )}

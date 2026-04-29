@@ -30,7 +30,7 @@ const TaskBoard = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/tasks/my', {
+            const res = await axios.get('/api/tasks/my', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setTasks(res.data);
@@ -56,7 +56,7 @@ const TaskBoard = () => {
     const updateTaskStatus = async (taskId, newStatus) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`http://localhost:5000/api/tasks/${taskId}/status`,
+            await axios.patch(`/api/tasks/${taskId}/status`,
                 { status: newStatus },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -82,7 +82,7 @@ const TaskBoard = () => {
         setUploading(true);
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post(`http://localhost:5000/api/tasks/${selectedTask.id}/attachments`, formData, {
+            const res = await axios.post(`/api/tasks/${selectedTask.id}/attachments`, formData, {
                 headers: { 
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
@@ -367,7 +367,7 @@ const TaskBoard = () => {
                                             </div>
                                         </div>
                                         <a 
-                                            href={`http://localhost:5000${file.fileUrl}`} 
+                                            href={`${file.fileUrl}`} 
                                             target="_blank" 
                                             rel="noreferrer"
                                             className="p-2 bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white rounded-lg transition-all"

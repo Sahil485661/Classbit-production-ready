@@ -54,14 +54,14 @@ const AdminDashboard = () => {
 
                 // Fetch individually
                 try {
-                    const statsRes = await axios.get('http://localhost:5000/api/dashboard/stats', { headers });
+                    const statsRes = await axios.get('/api/dashboard/stats', { headers });
                     setData(statsRes.data);
                 } catch (e) {
                     console.error('Stats fetch failed:', e);
                 }
 
                 try {
-                    const tasksRes = await axios.get('http://localhost:5000/api/tasks/my', { headers });
+                    const tasksRes = await axios.get('/api/tasks/my', { headers });
                     setRecentTasks(Array.isArray(tasksRes.data) ? tasksRes.data : []);
                 } catch (e) {
                     console.error('Recent tasks fetch failed:', e);

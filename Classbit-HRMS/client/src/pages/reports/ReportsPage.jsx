@@ -23,7 +23,7 @@ const ReportsPage = () => {
 
     const fetchReportData = async () => {
         const token = localStorage.getItem('token');
-        const res = await axios.get(`http://localhost:5000/api/reports/${reportType}`, {
+        const res = await axios.get(`/api/reports/${reportType}`, {
             headers: { Authorization: `Bearer ${token}` }
         });
         return res.data;

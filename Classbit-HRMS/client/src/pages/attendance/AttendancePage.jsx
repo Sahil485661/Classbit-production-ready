@@ -45,7 +45,7 @@ const AttendancePage = () => {
     const fetchEmployeesList = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/employees', { headers: { Authorization: `Bearer ${token}` } });
+            const res = await axios.get('/api/employees', { headers: { Authorization: `Bearer ${token}` } });
             setEmployeesList(Array.isArray(res.data) ? res.data : (res.data.employees || []));
         } catch (error) { console.error('Error fetching employees:', error); }
     };
@@ -53,7 +53,7 @@ const AttendancePage = () => {
     const fetchDepartments = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/employees/departments', {
+            const res = await axios.get('/api/employees/departments', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setDepartments(res.data);
@@ -67,8 +67,8 @@ const AttendancePage = () => {
         try {
             const token = localStorage.getItem('token');
             let url = user.role === 'Employee'
-                ? 'http://localhost:5000/api/attendance/my'
-                : 'http://localhost:5000/api/attendance/all';
+                ? '/api/attendance/my'
+                : '/api/attendance/all';
 
             const params = new URLSearchParams();
             if (filters.date) params.append('date', filters.date);
@@ -93,7 +93,7 @@ const AttendancePage = () => {
         setIsClocking(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/api/attendance/update-status', { type }, {
+            await axios.post('/api/attendance/update-status', { type }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             await fetchAttendance();
@@ -110,7 +110,7 @@ const AttendancePage = () => {
         setIsClocking(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/api/attendance/clock-in', {}, {
+            await axios.post('/api/attendance/clock-in', {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             await fetchAttendance();
@@ -126,7 +126,7 @@ const AttendancePage = () => {
         setIsClocking(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/api/attendance/clock-out', {}, {
+            await axios.post('/api/attendance/clock-out', {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             await fetchAttendance();

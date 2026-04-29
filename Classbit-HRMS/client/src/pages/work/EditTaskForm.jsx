@@ -26,8 +26,8 @@ const EditTaskForm = ({ task, onSuccess, onCancel }) => {
                 const token = localStorage.getItem('token');
                 const headers = { Authorization: `Bearer ${token}` };
                 const [eRes, dRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/employees', { headers }),
-                    axios.get('http://localhost:5000/api/employees/departments', { headers })
+                    axios.get('/api/employees', { headers }),
+                    axios.get('/api/employees/departments', { headers })
                 ]);
                 setEmployees(eRes.data);
                 setDepartments(dRes.data);
@@ -46,7 +46,7 @@ const EditTaskForm = ({ task, onSuccess, onCancel }) => {
             // ensure 'assigneeIds' is mapped over properly for the backend since we accept `assigneeIds`
             const payload = { ...formData, assigneeIds: formData.employeeIds };
             
-            await axios.put(`http://localhost:5000/api/tasks/${task.id}`, payload, {
+            await axios.put(`/api/tasks/${task.id}`, payload, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             onSuccess();

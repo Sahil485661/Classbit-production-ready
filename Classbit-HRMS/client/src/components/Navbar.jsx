@@ -12,7 +12,7 @@ import {
 import NotificationHub from './NotificationHub';
 import { useSidebar } from '../contexts/SidebarContext';
 
-const API = 'http://localhost:5000/api';
+const API = '/api';
 
 // Helper: format Indian currency
 const fmt = (n) => n ? `₹${Number(n).toLocaleString('en-IN', { minimumFractionDigits: 2 })}` : '—';
@@ -73,7 +73,7 @@ const ProfilePanel = ({ isOpen, onClose }) => {
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 rounded-2xl border-2 border-white/30 overflow-hidden shadow-xl shrink-0">
                             {profile?.profilePicture ? (
-                                <img src={`http://localhost:5000/uploads/${profile.profilePicture}`} alt="" className="w-full h-full object-cover" />
+                                <img src={`/uploads/${profile.profilePicture}`} alt="" className="w-full h-full object-cover" />
                             ) : (
                                 <div className="w-full h-full bg-white/20 flex items-center justify-center text-2xl font-bold">
                                     {user?.firstName?.[0]}{user?.lastName?.[0]}
@@ -213,7 +213,7 @@ const Navbar = () => {
                         </div>
                         <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white ring-2 shadow-lg transition-all overflow-hidden ${profileOpen ? 'bg-blue-700 ring-blue-500' : 'bg-slate-700 ring-[var(--border-color)] group-hover:bg-blue-600 group-hover:ring-blue-400'}`}>
                             {user?.profilePicture && user.profilePicture !== 'null' ? (
-                                <img src={user.profilePicture.startsWith('http') ? user.profilePicture : `http://localhost:5000/uploads/${user.profilePicture}`} alt="Profile" className="w-full h-full object-cover" />
+                                <img src={user.profilePicture.startsWith('http') ? user.profilePicture : `/uploads/${user.profilePicture}`} alt="Profile" className="w-full h-full object-cover" />
                             ) : (
                                 <User className="w-5 h-5" />
                             )}

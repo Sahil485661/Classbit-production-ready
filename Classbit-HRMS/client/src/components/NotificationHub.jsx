@@ -42,8 +42,8 @@ const NotificationHub = () => {
             const headers = { Authorization: `Bearer ${token}` };
 
             const [noticesRes, notificationsRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/notices', { headers }),
-                axios.get('http://localhost:5000/api/notifications', { headers })
+                axios.get('/api/notices', { headers }),
+                axios.get('/api/notifications', { headers })
             ]);
 
             const allNotices = Array.isArray(noticesRes.data) ? noticesRes.data.map(n => ({ ...n, entryType: 'Notice' })) : [];
@@ -73,7 +73,7 @@ const NotificationHub = () => {
     const markNotificationAsRead = async (id, type) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`http://localhost:5000/api/notifications/${id}/read`, {}, {
+            await axios.patch(`/api/notifications/${id}/read`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchData();

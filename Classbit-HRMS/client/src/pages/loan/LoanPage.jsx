@@ -22,8 +22,8 @@ const LoanPage = () => {
         try {
             const token = localStorage.getItem('token');
             const url = (user.role === 'Super Admin' || user.role === 'HR')
-                ? 'http://localhost:5000/api/loan/all'
-                : 'http://localhost:5000/api/loan/my';
+                ? '/api/loan/all'
+                : '/api/loan/my';
             const res = await axios.get(url, {
                 headers: { Authorization: `Bearer ${token}` }
             });
@@ -43,7 +43,7 @@ const LoanPage = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/api/loan/apply', formData, {
+            await axios.post('/api/loan/apply', formData, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setIsApplyModalOpen(false);
@@ -57,7 +57,7 @@ const LoanPage = () => {
     const handleUpdateStatus = async (id, status) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`http://localhost:5000/api/loan/${id}/status`, { status }, {
+            await axios.patch(`/api/loan/${id}/status`, { status }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchLoans();
@@ -69,7 +69,7 @@ const LoanPage = () => {
     const handleNotifyEmployee = async (id) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.post(`http://localhost:5000/api/email-actions/loan/${id}/notify`, {}, {
+            await axios.post(`/api/email-actions/loan/${id}/notify`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert('Employee notified successfully!');

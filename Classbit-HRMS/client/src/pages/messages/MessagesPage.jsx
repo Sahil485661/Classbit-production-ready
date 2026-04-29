@@ -54,7 +54,7 @@ const MessagesPage = () => {
     const fetchUnreadCounts = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/messages/inbox', {
+            const res = await axios.get('/api/messages/inbox', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             const counts = {};
@@ -96,9 +96,9 @@ const MessagesPage = () => {
             try {
                 const token = localStorage.getItem('token');
                 const [empRes, deptRes, groupsRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/employees', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get('http://localhost:5000/api/employees/departments', { headers: { Authorization: `Bearer ${token}` } }),
-                    axios.get('http://localhost:5000/api/messages/groups', { headers: { Authorization: `Bearer ${token}` } })
+                    axios.get('/api/employees', { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get('/api/employees/departments', { headers: { Authorization: `Bearer ${token}` } }),
+                    axios.get('/api/messages/groups', { headers: { Authorization: `Bearer ${token}` } })
                 ]);
                 const emps = empRes.data;
                 const me = emps.find(e => e.userId === user.id);
@@ -132,9 +132,9 @@ const MessagesPage = () => {
         if (!targetId) return;
         try {
             const token = localStorage.getItem('token');
-            let endpoint = `http://localhost:5000/api/messages/${targetId}`;
-            if (type === 'department') endpoint = `http://localhost:5000/api/messages/department/${targetId}`;
-            if (type === 'group') endpoint = `http://localhost:5000/api/messages/groups/${targetId}`;
+            let endpoint = `/api/messages/${targetId}`;
+            if (type === 'department') endpoint = `/api/messages/department/${targetId}`;
+            if (type === 'group') endpoint = `/api/messages/groups/${targetId}`;
                 
             const res = await axios.get(endpoint, {
                 headers: { Authorization: `Bearer ${token}` }
@@ -169,7 +169,7 @@ const MessagesPage = () => {
         e.preventDefault();
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.post('http://localhost:5000/api/messages/groups', 
+            const res = await axios.post('/api/messages/groups', 
                 { name: groupName, memberIds: selectedMembers },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -209,7 +209,7 @@ const MessagesPage = () => {
                 formData.append('attachment', file);
             }
 
-            const res = await axios.post('http://localhost:5000/api/messages', formData, {
+            const res = await axios.post('/api/messages', formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data'
@@ -487,16 +487,16 @@ const MessagesPage = () => {
                                                 return (
                                                     <div className={`mt-2 ${msg.content ? 'pt-2 border-t border-white/10' : ''}`}>
                                                         {isImage ? (
-                                                            <a href={`http://localhost:5000/${cleanPath}`} target="_blank" rel="noopener noreferrer">
+                                                            <a href={`/${cleanPath}`} target="_blank" rel="noopener noreferrer">
                                                                 <img
-                                                                    src={`http://localhost:5000/${cleanPath}`}
+                                                                    src={`/${cleanPath}`}
                                                                     alt={fileName}
                                                                     className="max-w-[220px] rounded-xl mt-1 border border-white/10 hover:opacity-90 transition-opacity"
                                                                 />
                                                             </a>
                                                         ) : (
                                                             <a
-                                                                href={`http://localhost:5000/${cleanPath}`}
+                                                                href={`/${cleanPath}`}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
                                                                 className="flex items-center gap-2 text-[10px] font-bold underline hover:no-underline opacity-90"

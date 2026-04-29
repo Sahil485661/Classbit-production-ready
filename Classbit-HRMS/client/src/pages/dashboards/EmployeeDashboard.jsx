@@ -47,7 +47,7 @@ const EmployeeDashboard = () => {
 
                 // Fetch individually to prevent one failure from blocking others
                 try {
-                    const workRes = await axios.get('http://localhost:5000/api/tasks/my', { headers });
+                    const workRes = await axios.get('/api/tasks/my', { headers });
                     setMyWork(Array.isArray(workRes.data) ? workRes.data : []);
                 } catch (e) {
                     console.error('Tasks fetch failed', e);
@@ -55,7 +55,7 @@ const EmployeeDashboard = () => {
                 }
 
                 try {
-                    const empRes = await axios.get('http://localhost:5000/api/employees', { headers });
+                    const empRes = await axios.get('/api/employees', { headers });
                     const myEmpData = Array.isArray(empRes.data) ? empRes.data.find(e => e.userId === user.id) : null;
                     if (myEmpData) {
                         let manager = myEmpData.Manager;
@@ -75,7 +75,7 @@ const EmployeeDashboard = () => {
                 }
 
                 try {
-                    const noticeRes = await axios.get('http://localhost:5000/api/notices', { headers });
+                    const noticeRes = await axios.get('/api/notices', { headers });
                     const allNotices = Array.isArray(noticeRes.data) ? noticeRes.data : [];
                     const allQuotes = allNotices.filter(n => n.type === 'Quote');
                     const combinedQuotes = allQuotes.length > 0 ? allQuotes : DEFAULT_QUOTES;
@@ -85,13 +85,13 @@ const EmployeeDashboard = () => {
                 } catch (e) { console.error('Notices fetch failed', e); }
                 
                 try {
-                    const settingsRes = await axios.get('http://localhost:5000/api/setup', { headers });
+                    const settingsRes = await axios.get('/api/setup', { headers });
                     const adminDesigs = settingsRes.data.find(s => s.key === 'eventAdminDesignations')?.value || '';
                     setPermittedDesignations(adminDesigs.split(',').map(d => d.trim()).filter(d => d));
                 } catch (e) { console.error('Settings fetch failed', e); }
 
                 try {
-                    const attRes = await axios.get('http://localhost:5000/api/attendance/my', { headers });
+                    const attRes = await axios.get('/api/attendance/my', { headers });
                     const attData = Array.isArray(attRes.data) ? attRes.data : [];
                     const today = new Date().toLocaleDateString('en-CA');
                     const todayAtt = attData.find(a => a.date === today);
@@ -129,18 +129,18 @@ const EmployeeDashboard = () => {
             const headers = { Authorization: `Bearer ${token}` };
 
             if (!isClockedIn && !shiftCompleted) {
-                const res = await axios.post('http://localhost:5000/api/attendance/clock-in', {}, { headers });
+                const res = await axios.post('/api/attendance/clock-in', {}, { headers });
                 const checkInDate = new Date(res.data.checkIn);
                 setClockInTime(checkInDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
                 setIsClockedIn(true);
                 setShiftCompleted(false);
             } else if (isClockedIn) {
-                await axios.post('http://localhost:5000/api/attendance/clock-out', {}, { headers });
+                await axios.post('/api/attendance/clock-out', {}, { headers });
                 setIsClockedIn(false);
                 setShiftCompleted(true);
             }
             // Trigger a re-fetch of all dashboard data to ensure consistency
-            const workRes = await axios.get('http://localhost:5000/api/tasks/my', { headers });
+            const workRes = await axios.get('/api/tasks/my', { headers });
             setMyWork(workRes.data);
         } catch (error) {
             alert(error.response?.data?.message || 'Attendance action failed');
@@ -151,7 +151,7 @@ const EmployeeDashboard = () => {
     const handleStatusChange = async (type) => {
         try {
             const token = localStorage.getItem('token');
-            await axios.post('http://localhost:5000/api/attendance/update-status', { type }, {
+            await axios.post('/api/attendance/update-status', { type }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setCurrentStatus(type);

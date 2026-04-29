@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Mail, Settings2, Activity, Save, AlertCircle, Copy, CheckCircle2, History } from 'lucide-react';
 
-const API = 'http://localhost:5000/api';
+const API = '/api';
 
 const EmailSettingsView = () => {
     const [activeTab, setActiveTab] = useState('templates'); // 'templates' or 'logs'

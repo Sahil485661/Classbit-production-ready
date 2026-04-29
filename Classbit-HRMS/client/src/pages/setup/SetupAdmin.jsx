@@ -37,7 +37,7 @@ const SetupAdmin = () => {
         setTokenMessage('');
 
         try {
-            const response = await axios.post('http://localhost:5000/api/setup/send-token', { email });
+            const response = await axios.post('/api/setup/send-token', { email });
             
             if (response.data.isFallback) {
                 setSetupToken(response.data.token);
@@ -92,7 +92,7 @@ const SetupAdmin = () => {
             formData.append('password', password);
             formData.append('setupToken', setupToken);
 
-            const response = await axios.post('http://localhost:5000/api/setup/complete', formData, {
+            const response = await axios.post('/api/setup/complete', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }

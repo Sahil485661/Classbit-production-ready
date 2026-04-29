@@ -17,7 +17,7 @@ const AddEmployeePage = () => {
             const fetchEmployee = async () => {
                 try {
                     const token = localStorage.getItem('token');
-                    const res = await axios.get(`http://localhost:5000/api/employees/${id}`, {
+                    const res = await axios.get(`/api/employees/${id}`, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     setInitialData(res.data);

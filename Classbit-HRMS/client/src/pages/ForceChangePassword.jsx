@@ -36,7 +36,7 @@ const ForceChangePassword = () => {
         setLoading(true);
         setError(null);
         try {
-            await axios.post('http://localhost:5000/api/auth/first-login-change', {
+            await axios.post('/api/auth/first-login-change', {
                 email: tempEmail,
                 password: currentPassword,
                 newPassword: newPassword

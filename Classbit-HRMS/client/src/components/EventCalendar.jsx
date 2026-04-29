@@ -36,13 +36,13 @@ const EventCalendar = ({ permittedDesignations, viewMode = 'month' }) => {
             const token = localStorage.getItem('token');
             const headers = { Authorization: `Bearer ${token}` };
             
-            const leaveUrl = user.role === 'Employee' ? 'http://localhost:5000/api/leave/my' : 'http://localhost:5000/api/leave/all';
+            const leaveUrl = user.role === 'Employee' ? '/api/leave/my' : '/api/leave/all';
             
             // Fetch Notices, Tasks, Attendance, and Leaves in parallel
             const [noticesRes, tasksRes, attRes, leavesRes] = await Promise.allSettled([
-                axios.get('http://localhost:5000/api/notices', { headers }),
-                axios.get('http://localhost:5000/api/tasks/my', { headers }),
-                axios.get('http://localhost:5000/api/attendance/my', { headers }),
+                axios.get('/api/notices', { headers }),
+                axios.get('/api/tasks/my', { headers }),
+                axios.get('/api/attendance/my', { headers }),
                 axios.get(leaveUrl, { headers })
             ]);
 
@@ -143,11 +143,11 @@ const EventCalendar = ({ permittedDesignations, viewMode = 'month' }) => {
         try {
             const token = localStorage.getItem('token');
             if (isEditing) {
-                await axios.put(`http://localhost:5000/api/notices/${editingId}`, formData, {
+                await axios.put(`/api/notices/${editingId}`, formData, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             } else {
-                await axios.post('http://localhost:5000/api/notices', formData, {
+                await axios.post('/api/notices', formData, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             }
@@ -166,7 +166,7 @@ const EventCalendar = ({ permittedDesignations, viewMode = 'month' }) => {
         if (!window.confirm("Delete this notice?")) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5000/api/notices/${id}`, {
+            await axios.delete(`/api/notices/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setShowDayModal(false);

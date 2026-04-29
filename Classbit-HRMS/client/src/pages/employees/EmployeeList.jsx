@@ -23,7 +23,7 @@ const EmployeeList = ({ title = "Employee Directory" }) => {
     const fetchEmployees = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/employees', {
+            const res = await axios.get('/api/employees', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setEmployees(res.data);
@@ -37,7 +37,7 @@ const EmployeeList = ({ title = "Employee Directory" }) => {
     const fetchDepartments = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/employees/departments', {
+            const res = await axios.get('/api/employees/departments', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setDepartments(res.data);
@@ -55,7 +55,7 @@ const EmployeeList = ({ title = "Employee Directory" }) => {
         if (!window.confirm('Are you sure you want to deactivate this employee?')) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5000/api/employees/${id}`, {
+            await axios.delete(`/api/employees/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchEmployees();
@@ -71,7 +71,7 @@ const EmployeeList = ({ title = "Employee Directory" }) => {
         
         try {
             const token = localStorage.getItem('token');
-            await axios.delete(`http://localhost:5000/api/employees/${id}/full`, {
+            await axios.delete(`/api/employees/${id}/full`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchEmployees();
@@ -84,7 +84,7 @@ const EmployeeList = ({ title = "Employee Directory" }) => {
         if (!window.confirm('Are you sure you want to reactivate this employee?')) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`http://localhost:5000/api/employees/${id}/reactivate`, {}, {
+            await axios.patch(`/api/employees/${id}/reactivate`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             fetchEmployees();
@@ -97,7 +97,7 @@ const EmployeeList = ({ title = "Employee Directory" }) => {
         if (!selectedEmployeeToPromote) return alert('Select an employee to promote');
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`http://localhost:5000/api/employees/${selectedEmployeeToPromote}/promote`, {}, {
+            await axios.patch(`/api/employees/${selectedEmployeeToPromote}/promote`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert('Employee designated as Manager successfully');
@@ -113,7 +113,7 @@ const EmployeeList = ({ title = "Employee Directory" }) => {
         if (!window.confirm('Are you sure you want to demote this manager back to a regular Employee?')) return;
         try {
             const token = localStorage.getItem('token');
-            await axios.patch(`http://localhost:5000/api/employees/${id}/demote`, {}, {
+            await axios.patch(`/api/employees/${id}/demote`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             alert('Manager demoted to Employee successfully');
@@ -165,7 +165,7 @@ const EmployeeList = ({ title = "Employee Directory" }) => {
                 });
 
                 try {
-                    await axios.post('http://localhost:5000/api/employees', empData, {
+                    await axios.post('/api/employees', empData, {
                         headers: { Authorization: `Bearer ${token}` }
                     });
                     success++;
@@ -363,7 +363,7 @@ const EmployeeList = ({ title = "Employee Directory" }) => {
                                                 onClick={() => navigate(`/employees/${emp.id}`)}
                                             >
                                                 {emp.profilePicture ? (
-                                                    <img src={`http://localhost:5000/uploads/${emp.profilePicture}`} alt={`${emp.firstName} ${emp.lastName}`} className="w-10 h-10 rounded-xl object-cover border border-[var(--border-color)] group-hover/link:border-blue-500/50 transition-colors shadow-sm" />
+                                                    <img src={`/uploads/${emp.profilePicture}`} alt={`${emp.firstName} ${emp.lastName}`} className="w-10 h-10 rounded-xl object-cover border border-[var(--border-color)] group-hover/link:border-blue-500/50 transition-colors shadow-sm" />
                                                 ) : (
                                                     <div className="w-10 h-10 rounded-xl bg-[var(--bg-secondary)] flex items-center justify-center text-blue-400 font-bold border border-[var(--border-color)] group-hover/link:border-blue-500/50 transition-colors shadow-sm">
                                                         {emp.firstName?.[0]}{emp.lastName?.[0]}

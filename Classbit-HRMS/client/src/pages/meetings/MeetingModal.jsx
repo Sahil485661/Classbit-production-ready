@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { X, Users, RefreshCw } from 'lucide-react';
 import Modal from '../../components/Modal';
 
-const API = 'http://localhost:5000/api';
+const API = '/api';
 
 const MeetingModal = ({ meeting, onClose, onSuccess }) => {
     const { token } = useSelector((state) => state.auth);

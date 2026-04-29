@@ -13,7 +13,7 @@ const ActivitiesPage = () => {
     const fetchLogs = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/activities', {
+            const res = await axios.get('/api/activities', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setLogs(res.data);

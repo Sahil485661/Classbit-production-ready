@@ -17,7 +17,7 @@ const RoleManagement = () => {
     const fetchRoles = async () => {
         try {
             const token = localStorage.getItem('token');
-            const res = await axios.get('http://localhost:5000/api/employees/roles', {
+            const res = await axios.get('/api/employees/roles', {
                 headers: { Authorization: `Bearer ${token}` }
             });
             setRoles(res.data);
@@ -39,11 +39,11 @@ const RoleManagement = () => {
             const dataToSave = { ...roleForm };
             
             if (roleForm.id) {
-                await axios.put(`http://localhost:5000/api/employees/roles/${roleForm.id}`, dataToSave, {
+                await axios.put(`/api/employees/roles/${roleForm.id}`, dataToSave, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             } else {
-                await axios.post('http://localhost:5000/api/employees/roles', dataToSave, {
+                await axios.post('/api/employees/roles', dataToSave, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
             }

@@ -14,7 +14,7 @@ const NoticeboardWidget = () => {
                 const token = localStorage.getItem('token');
                 if (!token) return;
                 const headers = { Authorization: `Bearer ${token}` };
-                const res = await axios.get('http://localhost:5000/api/notices', { headers });
+                const res = await axios.get('/api/notices', { headers });
                 
                 const activeNotices = (res.data || [])
                     .filter(n => n.type === 'Notice' || n.type === 'Announcement');

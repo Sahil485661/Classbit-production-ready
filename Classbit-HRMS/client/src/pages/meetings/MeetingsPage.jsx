@@ -4,7 +4,7 @@ import { useSelector } from 'react-redux';
 import { Video, Calendar, Clock, Plus, Users, Trash2, Edit, Mail } from 'lucide-react';
 import MeetingModal from './MeetingModal';
 
-const API = 'http://localhost:5000/api';
+const API = '/api';
 
 const MeetingsPage = () => {
     const { user, token } = useSelector((state) => state.auth);
