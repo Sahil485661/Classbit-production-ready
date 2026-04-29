@@ -18,9 +18,15 @@ const Role = sequelize.define('Role', {
         allowNull: true
     },
     permissions: {
-        type: DataTypes.JSON,
-        allowNull: true,
-        defaultValue: []
+        type: DataTypes.TEXT('long'),
+        get() {
+            const raw = this.getDataValue('permissions');
+            return raw ? JSON.parse(raw) : [];
+        },
+        set(val) {
+            this.setDataValue('permissions', val ? JSON.stringify(val) : '[]');
+        },
+        allowNull: true
     }
 }, {
     timestamps: true

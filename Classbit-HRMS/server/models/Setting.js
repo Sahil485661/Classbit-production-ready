@@ -13,7 +13,14 @@ const Setting = sequelize.define('Setting', {
         allowNull: false
     },
     value: {
-        type: DataTypes.JSON,
+        type: DataTypes.TEXT('long'),
+        get() {
+            const raw = this.getDataValue('value');
+            return raw ? JSON.parse(raw) : null;
+        },
+        set(val) {
+            this.setDataValue('value', val ? JSON.stringify(val) : null);
+        },
         allowNull: false
     },
     category: {

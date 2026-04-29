@@ -32,14 +32,26 @@ const Meeting = sequelize.define('Meeting', {
         allowNull: false
     },
     targetAudience: {
-        type: DataTypes.JSON,
-        allowNull: false,
-        defaultValue: { type: 'all', data: [] }, // type can be 'all', 'departments', 'employees'. data is array of ids.
+        type: DataTypes.TEXT('long'),
+        get() {
+            const raw = this.getDataValue('targetAudience');
+            return raw ? JSON.parse(raw) : { type: 'all', data: [] };
+        },
+        set(val) {
+            this.setDataValue('targetAudience', val ? JSON.stringify(val) : JSON.stringify({ type: 'all', data: [] }));
+        },
+        allowNull: false
     },
     employeeReactions: {
-        type: DataTypes.JSON,
-        allowNull: false,
-        defaultValue: [] // Array of { employeeId: string, status: 'Accepted' | 'Declined', timestamp: date }
+        type: DataTypes.TEXT('long'),
+        get() {
+            const raw = this.getDataValue('employeeReactions');
+            return raw ? JSON.parse(raw) : [];
+        },
+        set(val) {
+            this.setDataValue('employeeReactions', val ? JSON.stringify(val) : '[]');
+        },
+        allowNull: false
     }
 }, {
     timestamps: true
