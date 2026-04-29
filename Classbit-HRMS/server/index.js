@@ -123,26 +123,30 @@ CLOUDINARY_API_SECRET=${cloudinarySecret || ''}
     });
 
     const startServer = async () => {
-        await connectDB();
+        try {
+            await connectDB();
 
-        // Sync database 
-        if (process.env.NODE_ENV === 'development') {
-            await sequelize.sync({ alter: true });
-            console.log('Database synced');
-        }
+            // Sync database 
+            if (process.env.NODE_ENV === 'development') {
+                await sequelize.sync({ alter: true });
+                console.log('Database synced');
+            }
 
-        const setupTokenService = require('./utils/setupTokenService');
-        const { Role, User } = require('./models');
-        
-        // Check if Setup Token is required on startup
-        const adminRole = await Role.findOne({ where: { name: 'Super Admin' } });
-        let adminExists = false;
-        if (adminRole) {
-            const count = await User.count({ where: { roleId: adminRole.id } });
-            if (count > 0) adminExists = true;
-        }
-        if (!adminExists) {
-            setupTokenService.generateToken();
+            const setupTokenService = require('./utils/setupTokenService');
+            const { Role, User } = require('./models');
+            
+            // Check if Setup Token is required on startup
+            const adminRole = await Role.findOne({ where: { name: 'Super Admin' } });
+            let adminExists = false;
+            if (adminRole) {
+                const count = await User.count({ where: { roleId: adminRole.id } });
+                if (count > 0) adminExists = true;
+            }
+            if (!adminExists) {
+                setupTokenService.generateToken();
+            }
+        } catch (error) {
+            console.error('Database initialization failed. Starting server in degraded mode.', error.message);
         }
 
         app.listen(PORT, () => {
