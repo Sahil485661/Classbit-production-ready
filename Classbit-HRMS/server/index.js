@@ -129,7 +129,10 @@ CLOUDINARY_API_SECRET=${cloudinarySecret || ''}
             // Sync database 
             if (process.env.NODE_ENV === 'development') {
                 await sequelize.sync({ alter: true });
-                console.log('Database synced');
+                console.log('Database synced with alter: true');
+            } else {
+                await sequelize.sync(); // Create missing tables in production without altering existing ones
+                console.log('Database synced for production');
             }
 
             const setupTokenService = require('./utils/setupTokenService');
