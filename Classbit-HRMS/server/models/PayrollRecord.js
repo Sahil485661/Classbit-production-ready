@@ -40,15 +40,10 @@ const PayrollRecord = sequelize.define('PayrollRecord', {
         allowNull: true
     },
     breakdown: {
-        type: DataTypes.TEXT('long'),
-        get() {
-            const raw = this.getDataValue('breakdown');
-            return raw ? JSON.parse(raw) : {};
-        },
-        set(val) {
-            this.setDataValue('breakdown', val ? JSON.stringify(val) : '{}');
-        },
-        allowNull: true
+        type: DataTypes.JSON,
+        allowNull: true,
+        defaultValue: {}
+        // Snapshot: { baseSalary, allowances:{HRA,Travel,...}, deductions:{PF,ESI,Tax,...}, loanDeduction, lopDays, lopAmount, overtimePay }
     },
     payslipUrl: {
         type: DataTypes.STRING,

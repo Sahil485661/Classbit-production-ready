@@ -20,24 +20,12 @@ const SalaryComponent = sequelize.define('SalaryComponent', {
         defaultValue: 'Monthly'
     },
     allowances: {
-        type: DataTypes.TEXT('long'),
-        get() {
-            const raw = this.getDataValue('allowances');
-            return raw ? JSON.parse(raw) : {};
-        },
-        set(val) {
-            this.setDataValue('allowances', val ? JSON.stringify(val) : '{}');
-        }
+        type: DataTypes.JSON, // { HRA: 500, Travel: 200 }
+        defaultValue: {}
     },
     deductions: {
-        type: DataTypes.TEXT('long'),
-        get() {
-            const raw = this.getDataValue('deductions');
-            return raw ? JSON.parse(raw) : {};
-        },
-        set(val) {
-            this.setDataValue('deductions', val ? JSON.stringify(val) : '{}');
-        }
+        type: DataTypes.JSON, // { PF: 200, Tax: 100 }
+        defaultValue: {}
     },
     currency: {
         type: DataTypes.STRING,
