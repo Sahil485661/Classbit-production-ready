@@ -17,6 +17,7 @@ const MessagesPage = () => {
     const [unreadCounts, setUnreadCounts] = useState({});
     const [searchQuery, setSearchQuery] = useState('');
     const [myManager, setMyManager] = useState(null);
+    const [myProfile, setMyProfile] = useState(null);
     
     // Group Creation State
     const [showGroupModal, setShowGroupModal] = useState(false);
@@ -60,7 +61,9 @@ const MessagesPage = () => {
             const counts = {};
             res.data.forEach(msg => {
                 if (!msg.isRead) {
-                    const key = msg.groupId ? msg.groupId : msg.senderId;
+                    let key = msg.senderId;
+                    if (msg.groupId) key = msg.groupId;
+                    else if (msg.departmentId) key = msg.departmentId;
                     counts[key] = (counts[key] || 0) + 1;
                 }
             });
@@ -102,6 +105,7 @@ const MessagesPage = () => {
                 ]);
                 const emps = empRes.data;
                 const me = emps.find(e => e.userId === user.id);
+                setMyProfile(me);
                 let manager = null;
                 if (me) {
                     manager = me.Manager;
@@ -258,10 +262,13 @@ const MessagesPage = () => {
                     ) : (
                         <>
                             {/* Department Broadcasts */}
-                            {(user.role === 'Super Admin' || user.role === 'HR' || user.role === 'Manager') && departments.length > 0 && (
+                            {departments.length > 0 && departments.some(d => (user.role === 'Super Admin' || user.role === 'HR' || user.role === 'Manager') || d.id === myProfile?.departmentId) && (
                                 <div className="mb-4">
                                     <h3 className="px-6 py-2 text-xs font-bold text-[var(--text-secondary)] uppercase tracking-widest border-b border-[var(--border-color)]">Department Broadcasts</h3>
-                                    {departments.filter(d => d.name.toLowerCase().includes(searchTerm.toLowerCase())).map(dept => (
+                                    {departments.filter(d => 
+                                        d.name.toLowerCase().includes(searchTerm.toLowerCase()) && 
+                                        (user.role === 'Super Admin' || user.role === 'HR' || user.role === 'Manager' || d.id === myProfile?.departmentId)
+                                    ).map(dept => (
                                         <div
                                             key={`dept-${dept.id}`}
                                             onClick={() => {
@@ -275,8 +282,17 @@ const MessagesPage = () => {
                                                 <Users className="w-5 h-5" />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h4 className="font-bold text-[var(--text-primary)] text-sm truncate">{dept.name}</h4>
-                                                <p className="text-[11px] text-[var(--text-secondary)] truncate">Broadcast to department</p>
+                                                <div className="flex justify-between items-start">
+                                                    <h4 className="font-bold text-[var(--text-primary)] text-sm truncate">{dept.name}</h4>
+                                                    {unreadCounts[dept.id] > 0 && (
+                                                        <span className="bg-indigo-600 text-[10px] text-white px-1.5 py-0.5 rounded-full font-bold">
+                                                            {unreadCounts[dept.id]}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                <p className="text-[11px] text-[var(--text-secondary)] truncate">
+                                                    {unreadCounts[dept.id] > 0 ? "New broadcast" : "Broadcast to department"}
+                                                </p>
                                             </div>
                                         </div>
                                     ))}
@@ -374,9 +390,13 @@ const MessagesPage = () => {
                             className={`p-4 flex items-center gap-4 cursor-pointer transition-all border-l-4 ${activeChat?.id === chat.id ? 'bg-blue-600/10 border-blue-500' : 'border-transparent hover:bg-[var(--bg-secondary)]/50'}`}
                         >
                             <div className="relative">
-                                <div className="w-12 h-12 bg-slate-800 rounded-2xl flex items-center justify-center font-bold text-blue-400 border border-[var(--border-color)] shadow-sm">
-                                    {chat.firstName?.[0]}{chat.lastName?.[0]}
-                                </div>
+                                {chat.profilePicture ? (
+                                    <img src={chat.profilePicture.startsWith('http') ? chat.profilePicture : `/uploads/${chat.profilePicture}`} alt="profile" className="w-12 h-12 rounded-2xl object-cover border border-[var(--border-color)] shadow-sm" />
+                                ) : (
+                                    <div className="w-12 h-12 bg-slate-800 rounded-2xl flex items-center justify-center font-bold text-blue-400 border border-[var(--border-color)] shadow-sm">
+                                        {chat.firstName?.[0]}{chat.lastName?.[0]}
+                                    </div>
+                                )}
                                 <div className="absolute -bottom-1 -right-1 w-3.5 h-3.5 bg-green-500 border-2 border-[var(--card-bg)] rounded-full"></div>
                             </div>
                             <div className="flex-1 min-w-0">
@@ -405,8 +425,8 @@ const MessagesPage = () => {
                     {/* Header */}
                     <div className="p-4 border-b border-[var(--border-color)] flex justify-between items-center bg-[var(--bg-secondary)]/5">
                         <div className="flex items-center gap-4">
-                            <div className={`w-10 h-10 ${activeChat.isDepartment ? 'bg-indigo-600' : activeChat.isGroup ? 'bg-orange-500' : 'bg-blue-600'} rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-black/10`}>
-                                {activeChat.isDepartment ? <Users className="w-5 h-5"/> : activeChat.isGroup ? <Hash className="w-5 h-5" /> : `${activeChat.firstName?.[0]}${activeChat.lastName?.[0]}`}
+                            <div className={`w-10 h-10 ${activeChat.isDepartment ? 'bg-indigo-600' : activeChat.isGroup ? 'bg-orange-500' : 'bg-blue-600'} rounded-xl flex items-center justify-center text-white font-bold shadow-lg shadow-black/10 overflow-hidden`}>
+                                {activeChat.isDepartment ? <Users className="w-5 h-5"/> : activeChat.isGroup ? <Hash className="w-5 h-5" /> : (activeChat.profilePicture ? <img src={activeChat.profilePicture.startsWith('http') ? activeChat.profilePicture : `/uploads/${activeChat.profilePicture}`} className="w-full h-full object-cover" /> : `${activeChat.firstName?.[0]}${activeChat.lastName?.[0]}`)}
                             </div>
                             <div>
                                 <h3 className="font-bold text-[var(--text-primary)]">{activeChat.isDepartment ? `${activeChat.name} Department` : activeChat.isGroup ? activeChat.name : activeChat.isManagerRole ? `My Manager (${activeChat.firstName} ${activeChat.lastName})` : `${activeChat.firstName} ${activeChat.lastName}`}</h3>
@@ -469,6 +489,15 @@ const MessagesPage = () => {
                                         </div>
                                     )}
                                     <div className={`flex ${msg.senderId === user.id ? 'justify-end' : 'justify-start'}`}>
+                                        {msg.senderId !== user.id && (
+                                            <div className="w-8 h-8 rounded-xl mr-2 bg-slate-800 flex items-center justify-center text-blue-400 font-bold overflow-hidden shadow-sm shrink-0">
+                                                {msg.Sender?.Employee?.profilePicture ? (
+                                                    <img src={msg.Sender.Employee.profilePicture.startsWith('http') ? msg.Sender.Employee.profilePicture : `/uploads/${msg.Sender.Employee.profilePicture}`} alt="profile" className="w-full h-full object-cover" />
+                                                ) : (
+                                                    <User className="w-4 h-4" />
+                                                )}
+                                            </div>
+                                        )}
                                         <div className={`max-w-[70%] p-4 rounded-3xl text-sm shadow-sm ${msg.senderId === user.id
                                             ? 'bg-blue-600 text-white rounded-br-none'
                                             : 'bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border-color)] rounded-bl-none'
@@ -480,23 +509,25 @@ const MessagesPage = () => {
                                             )}
                                             {msg.content && <p className="leading-relaxed text-left">{msg.content}</p>}
                                             {msg.attachment && (() => {
-                                                // Normalize path and build a clean URL
                                                 const cleanPath = msg.attachment.replace(/\\/g, '/');
-                                                const fileName = cleanPath.split('/').pop().replace(/^\d+-/, '') || 'Attachment';
+                                                const fileUrl = msg.attachment.startsWith('http') ? msg.attachment : `/${cleanPath}`;
+                                                // Extract base filename without query parameters for extension check
+                                                const urlWithoutQuery = cleanPath.split('?')[0];
+                                                const fileName = urlWithoutQuery.split('/').pop().replace(/^\d+-/, '') || 'Attachment';
                                                 const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName);
                                                 return (
                                                     <div className={`mt-2 ${msg.content ? 'pt-2 border-t border-white/10' : ''}`}>
                                                         {isImage ? (
-                                                            <a href={`/${cleanPath}`} target="_blank" rel="noopener noreferrer">
+                                                            <a href={fileUrl} target="_blank" rel="noopener noreferrer">
                                                                 <img
-                                                                    src={`/${cleanPath}`}
+                                                                    src={fileUrl}
                                                                     alt={fileName}
                                                                     className="max-w-[220px] rounded-xl mt-1 border border-white/10 hover:opacity-90 transition-opacity"
                                                                 />
                                                             </a>
                                                         ) : (
                                                             <a
-                                                                href={`/${cleanPath}`}
+                                                                href={fileUrl}
                                                                 target="_blank"
                                                                 rel="noopener noreferrer"
                                                                 className="flex items-center gap-2 text-[10px] font-bold underline hover:no-underline opacity-90"

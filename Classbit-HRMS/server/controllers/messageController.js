@@ -125,10 +125,12 @@ const getConversation = async (req, res) => {
                 [Op.or]: [
                     { senderId: req.user.id, recipientId: targetEmployee.userId },
                     { senderId: targetEmployee.userId, recipientId: req.user.id }
-                ]
+                ],
+                groupId: null,
+                departmentId: null
             },
             include: [
-                { model: User, as: 'Sender', attributes: ['id', 'email'] }
+                { model: User, as: 'Sender', attributes: ['id', 'email'], include: [Employee] }
             ],
             order: [['createdAt', 'ASC']]
         });
@@ -158,7 +160,7 @@ const getDepartmentConversation = async (req, res) => {
 
         const allBroadcasts = await Message.findAll({
             where: { departmentId },
-            include: [ { model: User, as: 'Sender', attributes: ['id', 'email'] } ],
+            include: [ { model: User, as: 'Sender', attributes: ['id', 'email'], include: [Employee] } ],
             order: [['createdAt', 'ASC']]
         });
 
