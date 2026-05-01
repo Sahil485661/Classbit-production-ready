@@ -3,11 +3,16 @@ const { EmailTemplate, EmailLog } = require('../models');
 
 const getTransporter = () => {
     return nodemailer.createTransport({
-        service: 'gmail',
+        host: process.env.SMTP_HOST || 'smtp.gmail.com',
+        port: parseInt(process.env.SMTP_PORT) || 587,
+        secure: process.env.SMTP_SECURE === 'true',
         auth: {
             user: process.env.SMTP_USER,
             pass: process.env.SMTP_PASSWORD
-        }
+        },
+        connectionTimeout: 5000,
+        greetingTimeout: 5000,
+        socketTimeout: 10000
     });
 };
 
@@ -93,7 +98,7 @@ const sendOtpEmail = async (email, otp) => {
     return sendTemplatedEmail('PASSWORD_RESET', email, { 
         otp, 
         company_name: 'Classbit HRMS',
-        portal_url: 'http://localhost:5173'
+        portal_url: process.env.FRONTEND_URL || 'https://classbit-production-ready.onrender.com'
     }, 'System-Auth');
 };
 
