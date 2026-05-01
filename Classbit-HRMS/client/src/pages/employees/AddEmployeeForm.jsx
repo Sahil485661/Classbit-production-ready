@@ -185,7 +185,11 @@ const AddEmployeeForm = ({ onSuccess, onCancel, initialData = null }) => {
             });
             onSuccess();
         } catch (err) {
-            alert(err.response?.data?.message || 'Failed to save employee');
+            let errorMsg = err.response?.data?.message || 'Failed to save employee';
+            if (err.response?.data?.details) {
+                errorMsg += ':\n\n• ' + err.response.data.details.join('\n• ');
+            }
+            alert(errorMsg);
         } finally {
             setLoading(false);
         }
