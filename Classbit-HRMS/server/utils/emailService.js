@@ -1,18 +1,43 @@
 const nodemailer = require('nodemailer');
-const { EmailTemplate, EmailLog } = require('../models');
+const { EmailTemplate, EmailLog, Setting } = require('../models');
 
-const getTransporter = () => {
+const getTransporter = async () => {
+    // Try to get SMTP config from database settings first
+    let smtpConfig = null;
+    try {
+        const setting = await Setting.findOne({ where: { key: 'SMTP_CONFIG' } });
+        if (setting && setting.value) {
+            smtpConfig = typeof setting.value === 'string' ? JSON.parse(setting.value) : setting.value;
+        }
+    } catch (err) {
+        console.warn('Error fetching SMTP_CONFIG from DB, falling back to ENV:', err.message);
+    }
+
+    const host = smtpConfig?.host || process.env.SMTP_HOST || 'smtp.gmail.com';
+    const port = parseInt(smtpConfig?.port || process.env.SMTP_PORT) || 587;
+    const user = smtpConfig?.user || process.env.SMTP_USER;
+    const pass = smtpConfig?.pass || process.env.SMTP_PASSWORD;
+    
+    // Auto-detect secure based on port if not explicitly set
+    let secure = false;
+    if (smtpConfig && smtpConfig.secure !== undefined) {
+        secure = smtpConfig.secure === true || smtpConfig.secure === 'true';
+    } else if (process.env.SMTP_SECURE !== undefined) {
+        secure = process.env.SMTP_SECURE === 'true';
+    } else if (port === 465) {
+        secure = true;
+    }
+
     return nodemailer.createTransport({
-        host: process.env.SMTP_HOST || 'smtp.gmail.com',
-        port: parseInt(process.env.SMTP_PORT) || 587,
-        secure: process.env.SMTP_SECURE === 'true',
-        auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASSWORD
-        },
-        connectionTimeout: 5000,
-        greetingTimeout: 5000,
-        socketTimeout: 10000
+        host,
+        port,
+        secure,
+        auth: { user, pass },
+        connectionTimeout: 10000,
+        greetingTimeout: 10000,
+        socketTimeout: 15000,
+        debug: process.env.NODE_ENV === 'development',
+        logger: process.env.NODE_ENV === 'development'
     });
 };
 
@@ -51,7 +76,7 @@ const sendTemplatedEmail = async (templateName, recipientEmail, variables, trigg
             console.warn(`EmailTemplate '${templateName}' not found. Falling back to generic text.`);
         }
 
-        const transporter = getTransporter();
+        const transporter = await getTransporter();
         const mailOptions = {
             from: process.env.SMTP_USER,
             to: recipientEmail,
