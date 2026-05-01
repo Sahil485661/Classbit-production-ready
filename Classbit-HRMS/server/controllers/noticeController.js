@@ -3,9 +3,16 @@ const { Op } = require('sequelize');
 
 const createNotice = async (req, res) => {
     try {
-        const notice = await Notice.create(req.body);
+        const data = { ...req.body };
+        if (data.departmentId === '') data.departmentId = null;
+        if (data.expiryDate === '') data.expiryDate = null;
+        
+        const notice = await Notice.create(data);
         res.status(201).json(notice);
     } catch (error) {
+        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({ message: 'Validation failed', details: error.errors.map(e => `${e.path}: ${e.message}`) });
+        }
         res.status(500).json({ message: error.message });
     }
 };
@@ -42,9 +49,16 @@ const updateNotice = async (req, res) => {
         const notice = await Notice.findByPk(req.params.id);
         if (!notice) return res.status(404).json({ message: 'Notice not found' });
         
-        await notice.update(req.body);
+        const data = { ...req.body };
+        if (data.departmentId === '') data.departmentId = null;
+        if (data.expiryDate === '') data.expiryDate = null;
+
+        await notice.update(data);
         res.json(notice);
     } catch (error) {
+        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+            return res.status(400).json({ message: 'Validation failed', details: error.errors.map(e => `${e.path}: ${e.message}`) });
+        }
         res.status(500).json({ message: error.message });
     }
 };

@@ -131,6 +131,7 @@ const createEmployee = async (req, res) => {
 };
 
 const updateEmployee = async (req, res) => {
+    const transaction = await Employee.sequelize.transaction();
     try {
         const { email, password, roleId, ...employeeData } = req.body;
         const employee = await Employee.findByPk(req.params.id, { include: [User] });
@@ -140,8 +141,15 @@ const updateEmployee = async (req, res) => {
             employeeData.profilePicture = req.file.filename;
         }
 
+        // Clean up empty strings from FormData
+        if (employeeData.managerId === '') employeeData.managerId = null;
+        if (employeeData.departmentId === '') employeeData.departmentId = null;
+        if (employeeData.dob === '') employeeData.dob = null;
+        if (employeeData.trainingPeriodMonths === '') employeeData.trainingPeriodMonths = 0;
+        if (employeeData.probationPeriodMonths === '') employeeData.probationPeriodMonths = 0;
+
         // Update Employee
-        await employee.update(employeeData);
+        await employee.update(employeeData, { transaction });
 
         // Update User if related fields provided
         if (email || password || roleId) {
@@ -150,13 +158,22 @@ const updateEmployee = async (req, res) => {
                 if (email) user.email = email;
                 if (roleId) user.roleId = roleId;
                 if (password) user.password = password; // Hook handles hashing
-                await user.save();
+                await user.save({ transaction });
             }
         }
 
+        await transaction.commit();
         await createLog(req.user.id, 'UPDATE_EMPLOYEE', 'Employees', `Updated profile data for ${employee.firstName} ${employee.lastName}.`);
         res.json(employee);
     } catch (error) {
+        await transaction.rollback();
+        console.error('Employee Update Error:', error);
+        
+        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+            const messages = error.errors.map(e => `${e.path}: ${e.message}`);
+            return res.status(400).json({ message: 'Validation failed', details: messages });
+        }
+        
         res.status(500).json({ message: error.message });
     }
 };
