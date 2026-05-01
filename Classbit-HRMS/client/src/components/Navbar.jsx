@@ -73,7 +73,7 @@ const ProfilePanel = ({ isOpen, onClose }) => {
                     <div className="flex items-center gap-4">
                         <div className="w-16 h-16 rounded-2xl border-2 border-white/30 overflow-hidden shadow-xl shrink-0">
                             {profile?.profilePicture ? (
-                                <img src={`/uploads/${profile.profilePicture}`} alt="" className="w-full h-full object-cover" />
+                                <img src={profile.profilePicture.startsWith('http') ? profile.profilePicture : `/uploads/${profile.profilePicture}`} alt="" className="w-full h-full object-cover" />
                             ) : (
                                 <div className="w-full h-full bg-white/20 flex items-center justify-center text-2xl font-bold">
                                     {user?.firstName?.[0]}{user?.lastName?.[0]}

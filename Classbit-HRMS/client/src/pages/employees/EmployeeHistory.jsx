@@ -153,7 +153,7 @@ const EmployeeHistory = () => {
                                                 onClick={() => navigate(`/employees/${emp.id}`)}
                                             >
                                                 {emp.profilePicture ? (
-                                                    <img src={`/uploads/${emp.profilePicture}`} alt={`${emp.firstName} ${emp.lastName}`} className="w-10 h-10 rounded-xl object-cover border border-rose-500/30 grayscale group-hover/link:grayscale-0 transition-all shadow-sm" />
+                                                    <img src={emp.profilePicture.startsWith('http') ? emp.profilePicture : `/uploads/${emp.profilePicture}`} alt={`${emp.firstName} ${emp.lastName}`} className="w-10 h-10 rounded-xl object-cover border border-rose-500/30 grayscale group-hover/link:grayscale-0 transition-all shadow-sm" />
                                                 ) : (
                                                     <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-500 font-bold border border-rose-500/30 transition-colors shadow-sm">
                                                         {emp.firstName?.[0]}{emp.lastName?.[0]}

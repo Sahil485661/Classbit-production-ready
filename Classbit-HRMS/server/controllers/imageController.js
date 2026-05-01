@@ -1,5 +1,4 @@
-const { cloudinary, withRetry } = require('../config/cloudinary');
-const streamifier = require('streamifier');
+const { cloudinary, withRetry, uploadToCloudinary } = require('../config/cloudinary');
 const logger = require('../config/logger');
 const { Image, sequelize } = require('../models');
 const models = require('../models');
@@ -10,24 +9,6 @@ const entityModelMap = {
   user: models.User,
   task: models.Task,
   // Add other entities as needed
-};
-
-// Helper: Upload buffer to Cloudinary with timeout
-const uploadToCloudinary = (buffer, options) => {
-  return new Promise((resolve, reject) => {
-    // 15 seconds timeout
-    const timeout = setTimeout(() => {
-      reject(new Error('Cloudinary upload timeout'));
-    }, 15000);
-
-    const stream = cloudinary.uploader.upload_stream(options, (error, result) => {
-      clearTimeout(timeout);
-      if (error) return reject(error);
-      resolve(result);
-    });
-
-    streamifier.createReadStream(buffer).pipe(stream);
-  });
 };
 
 const uploadImages = async (req, res) => {

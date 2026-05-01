@@ -19,18 +19,7 @@ const {
     demoteToEmployee
 } = require('../controllers/employeeController');
 const { protect, authorize } = require('../middleware/authMiddleware');
-const multer = require('multer');
-const path = require('path');
-
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads/');
-    },
-    filename: function (req, file, cb) {
-        cb(null, 'emp_' + Date.now() + path.extname(file.originalname));
-    }
-});
-const upload = multer({ storage: storage });
+const cloudinaryUploadMiddleware = require('../middleware/cloudinaryUploadMiddleware');
 
 router.use(protect);
 
@@ -43,8 +32,8 @@ router.post('/departments', authorize('Super Admin'), createDepartment);
 router.get('/', getAllEmployees);
 router.get('/history', getDeletedEmployees);
 router.get('/:id', getEmployeeById);
-router.post('/', authorize('Super Admin', 'HR'), upload.single('profilePicture'), createEmployee);
-router.put('/:id', authorize('Super Admin', 'HR'), upload.single('profilePicture'), updateEmployee);
+router.post('/', authorize('Super Admin', 'HR'), cloudinaryUploadMiddleware.single('profilePicture'), createEmployee);
+router.put('/:id', authorize('Super Admin', 'HR'), cloudinaryUploadMiddleware.single('profilePicture'), updateEmployee);
 router.patch('/:id/reactivate', authorize('Super Admin', 'HR'), reactivateEmployee);
 router.patch('/:id/promote', authorize('Super Admin'), promoteToManager);
 router.patch('/:id/demote', authorize('Super Admin'), demoteToEmployee);

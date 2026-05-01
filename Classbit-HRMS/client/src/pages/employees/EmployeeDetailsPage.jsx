@@ -440,7 +440,7 @@ const EmployeeDetailsPage = () => {
                 <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-3xl rounded-full -mr-20 -mt-20 pointer-events-none" />
                 <div className="relative shrink-0 z-10">
                     {employee.profilePicture ? (
-                        <img src={`/uploads/${employee.profilePicture}`} alt={employee.firstName}
+                        <img src={employee.profilePicture.startsWith('http') ? employee.profilePicture : `/uploads/${employee.profilePicture}`} alt={employee.firstName}
                             className="w-32 h-32 md:w-40 md:h-40 rounded-3xl object-cover border-4 border-[var(--bg-secondary)] shadow-2xl" />
                     ) : (
                         <div className="w-32 h-32 md:w-40 md:h-40 rounded-3xl bg-blue-500/10 flex items-center justify-center text-blue-500 font-bold text-4xl border border-blue-500/20 shadow-2xl">

@@ -1,5 +1,6 @@
 const { Employee, User, Role, Department, Loan } = require('../models');
 const { createLog } = require('./activityController');
+const { uploadToCloudinary, cloudinary } = require('../config/cloudinary');
 
 const getAllEmployees = async (req, res) => {
     try {
@@ -70,7 +71,23 @@ const createEmployee = async (req, res) => {
             trainingPeriodMonths, probationPeriodMonths, managerId
         } = req.body;
 
-        const profilePicture = req.file ? req.file.filename : null;
+        let profilePictureUrl = null;
+        if (req.file) {
+            try {
+                const cloudResult = await uploadToCloudinary(req.file.buffer, {
+                    folder: `hrms/employee_profiles`,
+                    resource_type: 'auto'
+                });
+                profilePictureUrl = cloudinary.url(cloudResult.public_id, {
+                    secure: true,
+                    fetch_format: 'auto',
+                    quality: 'auto'
+                });
+            } catch (uploadError) {
+                console.error('Cloudinary upload failed during employee creation:', uploadError);
+                // Continue without profile picture if upload fails, or you could choose to fail the creation
+            }
+        }
 
         // Create User first
         const user = await User.create({
@@ -110,7 +127,7 @@ const createEmployee = async (req, res) => {
             upiId,
             trainingPeriodMonths: parseInt(trainingPeriodMonths) || 0,
             probationPeriodMonths: parseInt(probationPeriodMonths) || 0,
-            profilePicture,
+            profilePicture: profilePictureUrl,
             managerId: managerId || null
         }, { transaction });
 
@@ -138,7 +155,19 @@ const updateEmployee = async (req, res) => {
         if (!employee) return res.status(404).json({ message: 'Employee not found' });
 
         if (req.file) {
-            employeeData.profilePicture = req.file.filename;
+            try {
+                const cloudResult = await uploadToCloudinary(req.file.buffer, {
+                    folder: `hrms/employee_profiles`,
+                    resource_type: 'auto'
+                });
+                employeeData.profilePicture = cloudinary.url(cloudResult.public_id, {
+                    secure: true,
+                    fetch_format: 'auto',
+                    quality: 'auto'
+                });
+            } catch (uploadError) {
+                console.error('Cloudinary upload failed during employee update:', uploadError);
+            }
         }
 
         // Clean up empty strings from FormData

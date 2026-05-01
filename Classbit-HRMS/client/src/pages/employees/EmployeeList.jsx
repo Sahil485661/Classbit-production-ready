@@ -363,7 +363,7 @@ const EmployeeList = ({ title = "Employee Directory" }) => {
                                                 onClick={() => navigate(`/employees/${emp.id}`)}
                                             >
                                                 {emp.profilePicture ? (
-                                                    <img src={`/uploads/${emp.profilePicture}`} alt={`${emp.firstName} ${emp.lastName}`} className="w-10 h-10 rounded-xl object-cover border border-[var(--border-color)] group-hover/link:border-blue-500/50 transition-colors shadow-sm" />
+                                                    <img src={emp.profilePicture.startsWith('http') ? emp.profilePicture : `/uploads/${emp.profilePicture}`} alt={`${emp.firstName} ${emp.lastName}`} className="w-10 h-10 rounded-xl object-cover border border-[var(--border-color)] group-hover/link:border-blue-500/50 transition-colors shadow-sm" />
                                                 ) : (
                                                     <div className="w-10 h-10 rounded-xl bg-[var(--bg-secondary)] flex items-center justify-center text-blue-400 font-bold border border-[var(--border-color)] group-hover/link:border-blue-500/50 transition-colors shadow-sm">
                                                         {emp.firstName?.[0]}{emp.lastName?.[0]}

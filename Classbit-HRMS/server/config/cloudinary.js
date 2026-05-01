@@ -9,6 +9,8 @@ cloudinary.config({
   secure: true
 });
 
+const streamifier = require('streamifier');
+
 /**
  * Utility function to wrap promises with an exponential backoff retry mechanism.
  * Retries only on network/server errors (not 400s).
@@ -33,7 +35,27 @@ const withRetry = async (asyncFn, retries = 2, delay = 500) => {
   }
 };
 
+/**
+ * Upload buffer to Cloudinary with timeout
+ */
+const uploadToCloudinary = (buffer, options) => {
+  return new Promise((resolve, reject) => {
+    const timeout = setTimeout(() => {
+      reject(new Error('Cloudinary upload timeout'));
+    }, 15000);
+
+    const stream = cloudinary.uploader.upload_stream(options, (error, result) => {
+      clearTimeout(timeout);
+      if (error) return reject(error);
+      resolve(result);
+    });
+
+    streamifier.createReadStream(buffer).pipe(stream);
+  });
+};
+
 module.exports = {
   cloudinary,
-  withRetry
+  withRetry,
+  uploadToCloudinary
 };
