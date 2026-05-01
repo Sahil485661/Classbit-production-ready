@@ -1,6 +1,7 @@
 const { Setting, User, Role, Company, AppConfig, sequelize } = require('../models');
 const setupTokenService = require('../utils/setupTokenService');
 const nodemailer = require('nodemailer');
+const { uploadToCloudinary, cloudinary } = require('../config/cloudinary');
 
 const getSetupStatus = async (req, res) => {
     try {
@@ -87,7 +88,19 @@ const completeSetup = async (req, res) => {
         // 1. Create Company
         let logoUrl = null;
         if (req.file) {
-            logoUrl = req.file.filename;
+            try {
+                const cloudResult = await uploadToCloudinary(req.file.buffer, {
+                    folder: `hrms/company_logos`,
+                    resource_type: 'auto'
+                });
+                logoUrl = cloudinary.url(cloudResult.public_id, {
+                    secure: true,
+                    fetch_format: 'auto',
+                    quality: 'auto'
+                });
+            } catch (uploadError) {
+                console.error('Cloudinary upload failed for company logo:', uploadError);
+            }
         }
 
         await Company.create({

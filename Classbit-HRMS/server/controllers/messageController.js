@@ -1,12 +1,27 @@
 const { Message, User, Employee, Department, ChatGroup, ChatGroupMember } = require('../models');
 const { Op } = require('sequelize');
+const { uploadToCloudinary, cloudinary } = require('../config/cloudinary');
 
 const sendMessage = async (req, res) => {
     try {
         const { recipientId, departmentId, groupId, subject = 'Chat Message', content = '' } = req.body;
-        // Store a relative, forward-slash path so Express static can serve it correctly.
-        // req.file.path on Windows returns an absolute path — use filename only instead.
-        const attachment = req.file ? `uploads/messages/${req.file.filename}` : null;
+        let attachment = null;
+        if (req.file) {
+            try {
+                const cloudResult = await uploadToCloudinary(req.file.buffer, {
+                    folder: `hrms/chat_attachments`,
+                    resource_type: 'auto'
+                });
+                attachment = cloudinary.url(cloudResult.public_id, {
+                    secure: true,
+                    fetch_format: 'auto',
+                    quality: 'auto'
+                });
+            } catch (uploadError) {
+                console.error('Cloudinary upload failed for chat attachment:', uploadError);
+                return res.status(500).json({ message: 'Failed to upload attachment' });
+            }
+        }
 
         // At least one of content or attachment must be present
         if (!content.trim() && !attachment) {

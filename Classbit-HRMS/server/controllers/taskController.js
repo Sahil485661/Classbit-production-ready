@@ -2,6 +2,7 @@ const { sequelize } = require('../config/db');
 const { Task, TaskAssignment, Employee, User, Department, Role, Notification, TaskAttachment, TaskActivity, TaskComment } = require('../models');
 const { Op } = require('sequelize');
 const { createLog } = require('./activityController');
+const { uploadToCloudinary, cloudinary } = require('../config/cloudinary');
 
 const createTask = async (req, res) => {
     const t = await sequelize.transaction();
@@ -278,16 +279,31 @@ const uploadTaskAttachment = async (req, res) => {
         if (!task) return res.status(404).json({ message: 'Task not found' });
 
         if (!req.file) {
-            return res.status(400).json({ message: 'No file uploaded' });
+            return res.status(400).json({ message: 'No file provided' });
         }
 
-        // Create attachment record
+        let fileUrl = null;
+        try {
+            const cloudResult = await uploadToCloudinary(req.file.buffer, {
+                folder: `hrms/task_attachments`,
+                resource_type: 'auto'
+            });
+            fileUrl = cloudinary.url(cloudResult.public_id, {
+                secure: true,
+                fetch_format: 'auto',
+                quality: 'auto'
+            });
+        } catch (uploadError) {
+            console.error('Cloudinary upload failed for task attachment:', uploadError);
+            return res.status(500).json({ message: 'Failed to upload attachment to cloud storage' });
+        }
+
         const attachment = await TaskAttachment.create({
             taskId: taskId,
             uploaderId: uploaderId,
-            fileName: req.file.filename,
+            fileName: req.file.originalname,
             originalName: req.file.originalname,
-            fileUrl: `/uploads/${req.file.filename}`,
+            fileUrl: fileUrl,
             fileType: req.file.mimetype,
             fileSize: req.file.size
         });

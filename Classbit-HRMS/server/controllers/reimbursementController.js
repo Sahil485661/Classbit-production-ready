@@ -1,5 +1,6 @@
 const { ReimbursementCategory, ReimbursementClaim, Employee } = require('../models');
 const { Op } = require('sequelize');
+const { uploadToCloudinary, cloudinary } = require('../config/cloudinary');
 
 // ─────────────────────────────────────────────────
 // CATEGORY MANAGEMENT (Admin)
@@ -75,7 +76,24 @@ const submitClaim = async (req, res) => {
             return res.status(400).json({ message: `Amount exceeds the category limit of ₹${cat.maxLimit}` });
         }
         
-        const receiptUrl = req.file ? `/uploads/reimbursements/${req.file.filename}` : null;
+        let receiptUrl = null;
+        if (req.file) {
+            try {
+                const cloudResult = await uploadToCloudinary(req.file.buffer, {
+                    folder: `hrms/reimbursement_receipts`,
+                    resource_type: 'auto'
+                });
+                receiptUrl = cloudinary.url(cloudResult.public_id, {
+                    secure: true,
+                    fetch_format: 'auto',
+                    quality: 'auto'
+                });
+            } catch (uploadError) {
+                console.error('Cloudinary upload failed for reimbursement receipt:', uploadError);
+                return res.status(500).json({ message: 'Failed to upload receipt' });
+            }
+        }
+
         if (!receiptUrl && parseFloat(amount) > 1000) { // Require receipt for large amounts
             return res.status(400).json({ message: 'Receipt is strictly required for amounts over ₹1000' });
         }

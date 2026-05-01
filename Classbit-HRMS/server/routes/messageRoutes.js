@@ -12,16 +12,7 @@ if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, uploadDir);
-    },
-    filename: (req, file, cb) => {
-        // Sanitize original filename (remove spaces, special chars)
-        const safeName = file.originalname.replace(/\s+/g, '_').replace(/[^a-zA-Z0-9._-]/g, '');
-        cb(null, `${Date.now()}-${safeName}`);
-    }
-});
+const storage = multer.memoryStorage();
 
 // Allow common file types — images, PDFs, docs, zip
 const fileFilter = (req, file, cb) => {

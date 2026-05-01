@@ -108,7 +108,7 @@ const AppLayout = ({ children }) => {
               const res = await axios.get('/api/setup/company');
               setCompany({
                   name: res.data.name || 'Classbit Connect',
-                  logo: res.data.logoUrl ? `/uploads/${res.data.logoUrl}` : '/logo.png'
+                  logo: res.data.logoUrl ? (res.data.logoUrl.startsWith('http') ? res.data.logoUrl : `/uploads/${res.data.logoUrl}`) : '/logo.png'
               });
           } catch (err) {
               console.error('Failed to load company details', err);
