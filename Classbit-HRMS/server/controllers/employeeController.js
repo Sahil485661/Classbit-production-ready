@@ -56,6 +56,7 @@ const getEmployeeById = async (req, res) => {
 };
 
 const createEmployee = async (req, res) => {
+    const transaction = await Employee.sequelize.transaction();
     try {
         const {
             email, password, roleId,
@@ -74,9 +75,9 @@ const createEmployee = async (req, res) => {
         // Create User first
         const user = await User.create({
             email,
-            password,
+            password: password || 'password123',
             roleId
-        });
+        }, { transaction });
 
         // Create Employee record
         const employee = await Employee.create({
@@ -86,9 +87,9 @@ const createEmployee = async (req, res) => {
             lastName,
             gender,
             joiningDate,
-            departmentId,
+            departmentId: departmentId || null,
             designation,
-            status,
+            status: status || 'Active',
             fatherName,
             motherName,
             identityType,
@@ -100,22 +101,31 @@ const createEmployee = async (req, res) => {
             emergencyContactName,
             nationality,
             phone,
-            dob,
+            dob: dob || null,
             address,
             bankName,
             bankAccountNumber,
             bankIfscCode,
             accountHolderName,
             upiId,
-            trainingPeriodMonths,
-            probationPeriodMonths,
+            trainingPeriodMonths: parseInt(trainingPeriodMonths) || 0,
+            probationPeriodMonths: parseInt(probationPeriodMonths) || 0,
             profilePicture,
             managerId: managerId || null
-        });
+        }, { transaction });
 
+        await transaction.commit();
         await createLog(req.user.id, 'CREATE_EMPLOYEE', 'Employees', `Added new employee ${firstName} ${lastName} (${employeeId}).`);
         res.status(201).json(employee);
     } catch (error) {
+        await transaction.rollback();
+        console.error('Employee Creation Error:', error);
+        
+        if (error.name === 'SequelizeValidationError' || error.name === 'SequelizeUniqueConstraintError') {
+            const messages = error.errors.map(e => `${e.path}: ${e.message}`);
+            return res.status(400).json({ message: 'Validation failed', details: messages });
+        }
+        
         res.status(500).json({ message: error.message });
     }
 };
