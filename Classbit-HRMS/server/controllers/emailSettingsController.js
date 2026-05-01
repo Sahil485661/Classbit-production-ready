@@ -133,6 +133,7 @@ exports.testSmtpConnection = async (req, res) => {
             connectionTimeout: 15000,
             greetingTimeout: 15000,
             socketTimeout: 20000,
+            family: 4, // Force IPv4 to avoid ENETUNREACH on IPv6
             tls: {
                 rejectUnauthorized: false // Helps with some restricted networks/firewalls
             }
