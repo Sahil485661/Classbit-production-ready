@@ -105,17 +105,17 @@ exports.getSmtpSettings = async (req, res) => {
 
 exports.updateSmtpSettings = async (req, res) => {
     try {
-        const { host, port, user, pass, secure } = req.body;
+        const { host, port, user, pass, secure, service } = req.body;
         const [setting, created] = await Setting.findOrCreate({
             where: { key: 'SMTP_CONFIG' },
             defaults: { 
-                value: { host, port, user, pass, secure },
+                value: { host, port, user, pass, secure, service },
                 category: 'SMTP'
             }
         });
 
         if (!created) {
-            await setting.update({ value: { host, port, user, pass, secure } });
+            await setting.update({ value: { host, port, user, pass, secure, service } });
         }
 
         res.json({ message: 'SMTP settings updated successfully', setting });
@@ -126,23 +126,43 @@ exports.updateSmtpSettings = async (req, res) => {
 
 exports.testSmtpConnection = async (req, res) => {
     try {
-        const { host, port, user, pass, secure } = req.body;
+        const { host, port, user, pass, secure, service } = req.body;
         
-        const transporter = nodemailer.createTransport({
-            host,
-            port: parseInt(port),
-            secure: secure === true || secure === 'true',
+        const config = {
             auth: { user, pass },
-            connectionTimeout: 10000
-        });
+            connectionTimeout: 15000,
+            greetingTimeout: 15000,
+            socketTimeout: 20000,
+            tls: {
+                rejectUnauthorized: false // Helps with some restricted networks/firewalls
+            }
+        };
+
+        if (service && service !== 'custom') {
+            config.service = service;
+        } else {
+            config.host = host;
+            config.port = parseInt(port);
+            config.secure = secure === true || secure === 'true';
+        }
+
+        const transporter = nodemailer.createTransport(config);
 
         await transporter.verify();
         res.json({ message: 'Connection successful! Your SMTP settings are valid.' });
     } catch (error) {
         console.error('SMTP Test Failed:', error);
+        let errorHint = '';
+        if (error.code === 'ETIMEDOUT' || error.code === 'ECONNREFUSED') {
+            errorHint = ' - This usually means the port is blocked by your hosting provider (Render). Try Port 465 with SSL enabled.';
+        } else if (error.code === 'EAUTH') {
+            errorHint = ' - Authentication failed. Please check your email and App Password.';
+        }
+
         res.status(400).json({ 
-            message: 'Connection failed. Please check your credentials and network.',
-            error: error.message 
+            message: `Connection failed${errorHint}`,
+            error: error.message,
+            code: error.code
         });
     }
 };

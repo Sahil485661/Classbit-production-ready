@@ -17,6 +17,7 @@ const getTransporter = async () => {
     const port = parseInt(smtpConfig?.port || process.env.SMTP_PORT) || 587;
     const user = smtpConfig?.user || process.env.SMTP_USER;
     const pass = smtpConfig?.pass || process.env.SMTP_PASSWORD;
+    const service = smtpConfig?.service || process.env.SMTP_SERVICE;
     
     // Auto-detect secure based on port if not explicitly set
     let secure = false;
@@ -28,17 +29,27 @@ const getTransporter = async () => {
         secure = true;
     }
 
-    return nodemailer.createTransport({
-        host,
-        port,
-        secure,
+    const config = {
         auth: { user, pass },
         connectionTimeout: 10000,
         greetingTimeout: 10000,
         socketTimeout: 15000,
+        tls: {
+            rejectUnauthorized: false
+        },
         debug: process.env.NODE_ENV === 'development',
         logger: process.env.NODE_ENV === 'development'
-    });
+    };
+
+    if (service && service !== 'custom') {
+        config.service = service;
+    } else {
+        config.host = host;
+        config.port = port;
+        config.secure = secure;
+    }
+
+    return nodemailer.createTransport(config);
 };
 
 /**

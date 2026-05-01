@@ -18,7 +18,15 @@ const EmailSettingsView = () => {
     const [saveSuccess, setSaveSuccess] = useState(false);
     
     // SMTP State
-    const [smtpConfig, setSmtpConfig] = useState({ host: '', port: '', user: '', pass: '', secure: false });
+    const [smtpConfig, setSmtpConfig] = useState({ 
+        host: '', 
+        port: '', 
+        user: '', 
+        pass: '', 
+        secure: false,
+        service: 'custom'
+    });
+
     const [testingSmtp, setTestingSmtp] = useState(false);
     const [testResult, setTestResult] = useState(null);
 
@@ -67,7 +75,11 @@ const EmailSettingsView = () => {
             const res = await axios.get(`${API}/email-settings/smtp`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setSmtpConfig(res.data);
+            setSmtpConfig(prev => ({
+                ...prev,
+                ...res.data,
+                service: res.data.service || 'custom'
+            }));
         } catch (error) {
             console.error('Failed to fetch SMTP settings', error);
         }
@@ -372,7 +384,7 @@ const EmailSettingsView = () => {
 
             {activeTab === 'smtp' && (
                 <div className="max-w-3xl mx-auto animate-in slide-in-from-bottom-4 duration-300">
-                    <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl overflow-hidden">
+                    <div className="bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-3xl overflow-hidden shadow-xl">
                         <div className="p-8 border-b border-[var(--border-color)] bg-blue-600/5">
                             <div className="flex items-center gap-4 mb-4">
                                 <div className="w-12 h-12 bg-blue-600 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/20">
@@ -385,52 +397,85 @@ const EmailSettingsView = () => {
                             </div>
                             
                             {testResult && (
-                                <div className={`p-4 rounded-xl flex items-start gap-3 border ${
+                                <div className={`p-4 rounded-xl flex items-start gap-3 border animate-in fade-in slide-in-from-top-2 ${
                                     testResult.success 
                                         ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-600' 
                                         : 'bg-rose-500/10 border-rose-500/20 text-rose-600'
                                 }`}>
                                     {testResult.success ? <CheckCircle2 className="w-5 h-5 mt-0.5" /> : <AlertCircle className="w-5 h-5 mt-0.5" />}
-                                    <div>
+                                    <div className="flex-1">
                                         <p className="font-bold">{testResult.message}</p>
-                                        {testResult.details && <p className="text-xs mt-1 opacity-80 font-mono">{testResult.details}</p>}
+                                        {testResult.details && <p className="text-xs mt-1 opacity-80 font-mono break-all">{testResult.details}</p>}
                                     </div>
-                                    <button onClick={() => setTestResult(null)} className="ml-auto"><X className="w-4 h-4"/></button>
+                                    <button onClick={() => setTestResult(null)} className="p-1 hover:bg-black/5 rounded-lg transition-colors">
+                                        <X className="w-4 h-4"/>
+                                    </button>
                                 </div>
                             )}
                         </div>
 
                         <form onSubmit={handleUpdateSmtp} className="p-8 space-y-6">
+                            <div className="space-y-2">
+                                <label className="text-sm font-bold text-[var(--text-secondary)] flex items-center gap-2">
+                                    <Activity className="w-4 h-4" /> Select Service
+                                </label>
+                                <select 
+                                    value={smtpConfig.service}
+                                    onChange={e => {
+                                        const val = e.target.value;
+                                        setSmtpConfig(prev => ({
+                                            ...prev, 
+                                            service: val,
+                                            host: val === 'custom' ? prev.host : '',
+                                            port: val === 'custom' ? prev.port : ''
+                                        }));
+                                    }}
+                                    className="w-full bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-all font-medium"
+                                >
+                                    <option value="custom">Custom (Manual Config)</option>
+                                    <option value="gmail">Gmail</option>
+                                    <option value="outlook">Outlook / Office 365</option>
+                                    <option value="hotmail">Hotmail</option>
+                                    <option value="yahoo">Yahoo</option>
+                                    <option value="icloud">iCloud</option>
+                                </select>
+                            </div>
+
+                            {smtpConfig.service === 'custom' && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-in fade-in duration-200">
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-[var(--text-secondary)] flex items-center gap-2">
+                                            <Server className="w-4 h-4" /> SMTP Host
+                                        </label>
+                                        <input 
+                                            type="text"
+                                            value={smtpConfig.host}
+                                            onChange={e => setSmtpConfig({...smtpConfig, host: e.target.value})}
+                                            className="w-full bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-all"
+                                            placeholder="e.g. smtp.gmail.com"
+                                            required={smtpConfig.service === 'custom'}
+                                        />
+                                    </div>
+                                    <div className="space-y-2">
+                                        <label className="text-sm font-bold text-[var(--text-secondary)] flex items-center gap-2">
+                                            <Hash className="w-4 h-4" /> SMTP Port
+                                        </label>
+                                        <input 
+                                            type="text"
+                                            value={smtpConfig.port}
+                                            onChange={e => setSmtpConfig({...smtpConfig, port: e.target.value})}
+                                            className="w-full bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-all"
+                                            placeholder="e.g. 587 or 465"
+                                            required={smtpConfig.service === 'custom'}
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-[var(--text-secondary)] flex items-center gap-2">
-                                        <Server className="w-4 h-4" /> SMTP Host
-                                    </label>
-                                    <input 
-                                        type="text"
-                                        value={smtpConfig.host}
-                                        onChange={e => setSmtpConfig({...smtpConfig, host: e.target.value})}
-                                        className="w-full bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-all"
-                                        placeholder="e.g. smtp.gmail.com"
-                                        required
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-[var(--text-secondary)] flex items-center gap-2">
-                                        <Hash className="w-4 h-4" /> SMTP Port
-                                    </label>
-                                    <input 
-                                        type="text"
-                                        value={smtpConfig.port}
-                                        onChange={e => setSmtpConfig({...smtpConfig, port: e.target.value})}
-                                        className="w-full bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-all"
-                                        placeholder="e.g. 587 or 465"
-                                        required
-                                    />
-                                </div>
-                                <div className="space-y-2">
-                                    <label className="text-sm font-bold text-[var(--text-secondary)] flex items-center gap-2">
-                                        <UserIcon className="w-4 h-4" /> SMTP User / Email
+                                        <UserIcon className="w-4 h-4" /> Email Address
                                     </label>
                                     <input 
                                         type="email"
@@ -443,7 +488,7 @@ const EmailSettingsView = () => {
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-sm font-bold text-[var(--text-secondary)] flex items-center gap-2">
-                                        <Lock className="w-4 h-4" /> SMTP Password / App Secret
+                                        <Lock className="w-4 h-4" /> App Password / Secret
                                     </label>
                                     <input 
                                         type="password"
@@ -456,40 +501,43 @@ const EmailSettingsView = () => {
                                 </div>
                             </div>
 
-                            <div className="flex items-center gap-3 p-4 bg-slate-500/5 rounded-2xl border border-[var(--border-color)]">
-                                <input 
-                                    type="checkbox"
-                                    id="secure-smtp"
-                                    checked={smtpConfig.secure}
-                                    onChange={e => setSmtpConfig({...smtpConfig, secure: e.target.checked})}
-                                    className="w-5 h-5 rounded-md border-[var(--border-color)] text-blue-600 focus:ring-blue-500"
-                                />
-                                <label htmlFor="secure-smtp" className="text-sm font-medium text-[var(--text-primary)] cursor-pointer">
-                                    Use Secure Connection (SSL/TLS) - Typically for Port 465
-                                </label>
-                            </div>
+                            {smtpConfig.service === 'custom' && (
+                                <div className="flex items-center gap-3 p-4 bg-slate-500/5 rounded-2xl border border-[var(--border-color)]">
+                                    <input 
+                                        type="checkbox"
+                                        id="secure-smtp"
+                                        checked={smtpConfig.secure}
+                                        onChange={e => setSmtpConfig({...smtpConfig, secure: e.target.checked})}
+                                        className="w-5 h-5 rounded-md border-[var(--border-color)] text-blue-600 focus:ring-blue-500"
+                                    />
+                                    <label htmlFor="secure-smtp" className="text-sm font-medium text-[var(--text-primary)] cursor-pointer">
+                                        Use SSL/TLS (Required for Port 465)
+                                    </label>
+                                </div>
+                            )}
 
-                            <div className="flex gap-4 pt-4">
+                            <div className="flex flex-col sm:flex-row gap-4 pt-4">
                                 <button 
                                     type="button"
                                     onClick={handleTestSmtp}
                                     disabled={testingSmtp}
                                     className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-[var(--card-bg)] border border-[var(--border-color)] hover:border-blue-500 text-[var(--text-primary)] font-bold rounded-xl transition-all disabled:opacity-50"
                                 >
-                                    {testingSmtp ? <Activity className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
-                                    {testingSmtp ? 'Testing Connection...' : 'Test Connection'}
+                                    {testingSmtp ? <Activity className="w-5 h-5 animate-spin text-blue-500" /> : <Send className="w-5 h-5 text-blue-500" />}
+                                    {testingSmtp ? 'Verifying...' : 'Test Connection'}
                                 </button>
                                 <button 
                                     type="submit"
                                     className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-500/20"
                                 >
-                                    <Save className="w-5 h-5" /> Save Configuration
+                                    <Save className="w-5 h-5" /> Save Changes
                                 </button>
                             </div>
                         </form>
                     </div>
                 </div>
             )}
+
 
             {activeTab === 'logs' && (
                 <div className="animate-in fade-in duration-300">
