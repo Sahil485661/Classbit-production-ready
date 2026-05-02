@@ -35,9 +35,9 @@ const getTransporter = async () => {
 
     const config = {
         auth: { user, pass },
-        connectionTimeout: 10000,
-        greetingTimeout: 10000,
-        socketTimeout: 15000,
+        connectionTimeout: 30000,
+        greetingTimeout: 30000,
+        socketTimeout: 30000,
         family: 4, // Force IPv4
         tls: {
             rejectUnauthorized: false
