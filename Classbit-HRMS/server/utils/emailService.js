@@ -152,7 +152,57 @@ const sendOtpEmail = async (email, otp) => {
     }, 'System-Auth');
 };
 
+/**
+ * Initialize default templates if they don't exist
+ */
+const initDefaultTemplates = async () => {
+    try {
+        const defaults = [
+            {
+                name: 'PASSWORD_RESET',
+                subject: 'Password Reset OTP - {company_name}',
+                htmlBody: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e1e4e8; border-radius: 12px; background-color: #ffffff;">
+                        <div style="text-align: center; margin-bottom: 30px;">
+                            <h2 style="color: #2c3e50; margin: 0;">Password Reset Request</h2>
+                            <p style="color: #7f8c8d; font-size: 14px; margin-top: 5px;">Classbit HRMS Security Service</p>
+                        </div>
+                        
+                        <p style="color: #34495e; line-height: 1.6;">Hello,</p>
+                        <p style="color: #34495e; line-height: 1.6;">We received a request to reset your password. Use the following OTP to complete the process:</p>
+                        
+                        <div style="background: #f8f9fa; border: 2px dashed #3498db; border-radius: 12px; padding: 20px; text-align: center; margin: 25px 0;">
+                            <span style="font-family: 'Courier New', monospace; font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #3498db;">{otp}</span>
+                        </div>
+                        
+                        <p style="color: #e74c3c; font-size: 13px; font-weight: bold;">This OTP is valid for 10 minutes only.</p>
+                        <p style="color: #7f8c8d; font-size: 13px; line-height: 1.6;">If you didn't request this, you can safely ignore this email. Your password will remain unchanged.</p>
+                        
+                        <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;" />
+                        
+                        <div style="text-align: center;">
+                            <p style="color: #95a5a6; font-size: 12px; margin: 0;">&copy; 2026 {company_name} | <a href="{portal_url}" style="color: #3498db; text-decoration: none;">Visit Portal</a></p>
+                        </div>
+                    </div>
+                `,
+                description: 'Sent when a user requests a password reset OTP'
+            }
+        ];
+
+        for (const t of defaults) {
+            await EmailTemplate.findOrCreate({
+                where: { name: t.name },
+                defaults: t
+            });
+        }
+        console.log('Default email templates initialized.');
+    } catch (error) {
+        console.error('Failed to initialize default templates:', error.message);
+    }
+};
+
 module.exports = {
     sendTemplatedEmail,
-    sendOtpEmail
+    sendOtpEmail,
+    initDefaultTemplates
 };

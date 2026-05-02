@@ -136,8 +136,12 @@ CLOUDINARY_API_SECRET=${cloudinarySecret || ''}
             }
 
             const setupTokenService = require('./utils/setupTokenService');
+            const { initDefaultTemplates } = require('./utils/emailService');
             const { Role, User } = require('./models');
             
+            // Initialize templates
+            await initDefaultTemplates();
+
             // Check if Setup Token is required on startup
             const adminRole = await Role.findOne({ where: { name: 'Super Admin' } });
             let adminExists = false;
