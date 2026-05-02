@@ -1,3 +1,6 @@
+const dns = require('dns');
+dns.setDefaultResultOrder('ipv4first');
+
 const { EmailTemplate, EmailLog, Setting } = require('../models');
 const nodemailer = require('nodemailer');
 
@@ -150,9 +153,12 @@ exports.testSmtpConnection = async (req, res) => {
         const transporter = nodemailer.createTransport(config);
 
         await transporter.verify();
+        console.log(`SMTP Test Connection verified successfully for host: ${host || service}`);
         res.json({ message: 'Connection successful! Your SMTP settings are valid.' });
     } catch (error) {
-        console.error('SMTP Test Failed:', error);
+        console.error('SMTP Test Failed:', error.message);
+        console.error('Stack trace:', error.stack);
+        
         let errorHint = '';
         if (error.code === 'ETIMEDOUT' || error.code === 'ECONNREFUSED') {
             errorHint = ' - This usually means the port is blocked by your hosting provider (Render). Try Port 465 with SSL enabled.';

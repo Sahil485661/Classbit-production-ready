@@ -1,3 +1,7 @@
+const dns = require('dns');
+// Force IPv4 first to avoid ENETUNREACH errors on IPv6 in restricted environments like Render
+dns.setDefaultResultOrder('ipv4first');
+
 const nodemailer = require('nodemailer');
 const { EmailTemplate, EmailLog, Setting } = require('../models');
 
@@ -78,51 +82,60 @@ const sendTemplatedEmail = async (templateName, recipientEmail, variables, trigg
 
         const template = await EmailTemplate.findOne({ where: { name: templateName } });
         
-        let subject = `Notification: ${templateName}`;
-        let htmlBody = `<p>Message: ${JSON.stringify(variables)}</p>`;
+        let finalSubject = `Notification: ${templateName}`;
+        let finalBody = `<p>Message: ${JSON.stringify(variables)}</p>`;
         
         if (template) {
-            subject = replaceVariables(template.subject, variables);
-            htmlBody = replaceVariables(template.htmlBody, variables);
+            finalSubject = replaceVariables(template.subject, variables);
+            finalBody = replaceVariables(template.htmlBody, variables);
         } else {
             console.warn(`EmailTemplate '${templateName}' not found. Falling back to generic text.`);
         }
 
         const transporter = await getTransporter();
+        
+        // Verify connection before sending
+        try {
+            await transporter.verify();
+            console.log(`SMTP Connection verified successfully for ${recipientEmail}`);
+        } catch (verifyError) {
+            console.error('SMTP Verification Failed:', verifyError.message);
+            throw new Error(`SMTP Verification Failed: ${verifyError.message}`);
+        }
+
         const mailOptions = {
             from: process.env.SMTP_USER,
             to: recipientEmail,
-            subject: subject,
-            html: htmlBody
+            subject: finalSubject,
+            html: finalBody
         };
 
         const info = await transporter.sendMail(mailOptions);
-        console.log(`Email sent [${templateName}]: ` + info.response);
+        console.log(`Email sent successfully: ${info.messageId}`);
 
-        // Record log
+        // Log success
         await EmailLog.create({
             templateName,
             recipientEmail,
-            subject,
+            subject: finalSubject,
             status: 'Sent',
-            triggeredByObj
+            triggeredByObj: triggeredByObj || 'System'
         });
 
         return true;
     } catch (error) {
-        console.error(`Error sending email [${templateName}]:`, error);
-        
-        // Record failed log
-        try {
-            await EmailLog.create({
-                templateName,
-                recipientEmail,
-                subject: `Attempted: ${templateName}`,
-                status: 'Failed',
-                errorMsg: error.message,
-                triggeredByObj
-            });
-        } catch (logErr) {}
+        console.error('Failed to send email:', error.message);
+        console.error('Stack trace:', error.stack);
+
+        // Log failure
+        await EmailLog.create({
+            templateName,
+            recipientEmail,
+            subject: 'Failed to send email',
+            status: 'Failed',
+            errorMsg: error.message,
+            triggeredByObj: triggeredByObj || 'System'
+        });
 
         return false;
     }
