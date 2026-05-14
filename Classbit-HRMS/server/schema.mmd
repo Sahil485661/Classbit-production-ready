@@ -1,0 +1,437 @@
+erDiagram
+    User {
+        UUID id PK
+        STRING email
+        STRING password
+        INTEGER roleId
+        BOOLEAN isActive
+        DATE lastLogin
+        BOOLEAN needsPasswordChange
+        STRING resetOtp
+        DATE resetOtpExpiry
+        DATE createdAt
+        DATE updatedAt
+        DATE deletedAt
+    }
+    Role {
+        INTEGER id PK
+        STRING name
+        STRING description
+        JSON permissions
+        DATE createdAt
+        DATE updatedAt
+    }
+    Employee {
+        UUID id PK
+        UUID userId
+        STRING employeeId
+        STRING firstName
+        STRING lastName
+        STRING phone
+        ENUM gender
+        DATEONLY dob
+        DATEONLY joiningDate
+        INTEGER departmentId
+        STRING designation
+        TEXT address
+        STRING emergencyContact
+        ENUM status
+        STRING profilePicture
+        STRING fatherName
+        STRING motherName
+        ENUM identityType
+        STRING identityNumber
+        STRING whatsappNumber
+        STRING linkedinProfile
+        ENUM maritalStatus
+        STRING emergencyContactName
+        STRING nationality
+        STRING bankName
+        STRING bankAccountNumber
+        STRING bankIfscCode
+        STRING accountHolderName
+        STRING upiId
+        INTEGER probationPeriodMonths
+        INTEGER trainingPeriodMonths
+        UUID managerId
+        DATE createdAt
+        DATE updatedAt
+        DATE deletedAt
+    }
+    Department {
+        INTEGER id PK
+        STRING name
+        TEXT description
+        DATE createdAt
+        DATE updatedAt
+    }
+    Attendance {
+        BIGINT id PK
+        UUID employeeId
+        DATEONLY date
+        DATE checkIn
+        DATE checkOut
+        ENUM status
+        DECIMAL workingHours
+        DECIMAL overtime
+        TEXT note
+        STRING currentStatus
+        DATE createdAt
+        DATE updatedAt
+    }
+    Task {
+        UUID id PK
+        STRING title
+        TEXT description
+        DATE deadline
+        ENUM priority
+        ENUM status
+        STRING attachment
+        UUID createdBy
+        STRING assignmentType
+        INTEGER assignedDepartmentId
+        DATE createdAt
+        DATE updatedAt
+    }
+    TaskAssignment {
+        BIGINT id PK
+        UUID taskId
+        UUID employeeId
+        DATE assignedAt
+    }
+    LeaveRequest {
+        UUID id PK
+        UUID employeeId
+        INTEGER leaveTypeId
+        DATEONLY startDate
+        DATEONLY endDate
+        TEXT reason
+        ENUM status
+        UUID approvedBy
+        DATE approvalDate
+        TEXT comment
+        DATE createdAt
+        DATE updatedAt
+    }
+    SalaryComponent {
+        INTEGER id PK
+        UUID employeeId
+        DECIMAL baseSalary
+        ENUM payType
+        JSON allowances
+        JSON deductions
+        STRING currency
+        DATE createdAt
+        DATE updatedAt
+    }
+    PayrollRecord {
+        UUID id PK
+        UUID employeeId
+        INTEGER month
+        INTEGER year
+        DECIMAL grossSalary
+        DECIMAL totalDeductions
+        DECIMAL netSalary
+        ENUM status
+        STRING approvedBy
+        JSON breakdown
+        STRING payslipUrl
+        DATE createdAt
+        DATE updatedAt
+    }
+    Loan {
+        UUID id PK
+        UUID employeeId
+        DECIMAL amount
+        TEXT reason
+        INTEGER repaymentMonths
+        DECIMAL monthlyInstallment
+        ENUM status
+        DECIMAL remainingAmount
+        DATE createdAt
+        DATE updatedAt
+    }
+    Grievance {
+        UUID id PK
+        UUID employeeId
+        STRING subject
+        BOOLEAN isAnonymous
+        TEXT description
+        STRING category
+        ENUM status
+        TEXT response
+        UUID resolvedBy
+        DATE createdAt
+        DATE updatedAt
+    }
+    Transaction {
+        UUID id PK
+        ENUM type
+        STRING category
+        DECIMAL amount
+        DATEONLY date
+        TEXT description
+        STRING paymentMethod
+        STRING reference
+        DATE createdAt
+        DATE updatedAt
+    }
+    Message {
+        UUID id PK
+        UUID senderId
+        UUID recipientId
+        INTEGER departmentId
+        UUID groupId
+        STRING subject
+        TEXT content
+        STRING attachment
+        BOOLEAN isRead
+        DATE createdAt
+        DATE updatedAt
+    }
+    Notice {
+        UUID id PK
+        ENUM type
+        STRING title
+        TEXT content
+        STRING author
+        DATEONLY expiryDate
+        DATEONLY eventDate
+        BOOLEAN isActive
+        DATE createdAt
+        DATE updatedAt
+    }
+    ActivityLog {
+        UUID id PK
+        UUID userId
+        STRING action
+        STRING module
+        TEXT details
+        STRING ipAddress
+        DATE createdAt
+        DATE updatedAt
+    }
+    Setting {
+        INTEGER id PK
+        STRING key
+        JSON value
+        STRING category
+        DATE createdAt
+        DATE updatedAt
+    }
+    Notification {
+        UUID id PK
+        UUID userId
+        STRING title
+        TEXT message
+        ENUM type
+        BOOLEAN isRead
+        STRING relatedId
+        DATE createdAt
+        DATE updatedAt
+    }
+    EmailTemplate {
+        INTEGER id PK
+        STRING name
+        STRING subject
+        TEXT htmlBody
+        STRING description
+        DATE createdAt
+        DATE updatedAt
+    }
+    EmailLog {
+        INTEGER id PK
+        STRING templateName
+        STRING recipientEmail
+        STRING subject
+        ENUM status
+        TEXT errorMsg
+        STRING triggeredByObj
+        DATE createdAt
+        DATE updatedAt
+    }
+    AttendanceActivity {
+        BIGINT id PK
+        BIGINT attendanceId
+        STRING type
+        DATE startTime
+        DATE endTime
+        INTEGER duration
+        DATE createdAt
+        DATE updatedAt
+    }
+    TaskAttachment {
+        INTEGER id PK
+        UUID taskId
+        UUID uploaderId
+        STRING fileName
+        STRING originalName
+        STRING fileUrl
+        STRING fileType
+        INTEGER fileSize
+        DATE createdAt
+        DATE updatedAt
+    }
+    TaskActivity {
+        UUID id PK
+        UUID taskId
+        UUID userId
+        STRING action
+        TEXT details
+        DATE createdAt
+        DATE updatedAt
+    }
+    TaskComment {
+        UUID id PK
+        UUID taskId
+        UUID userId
+        TEXT text
+        DATE createdAt
+        DATE updatedAt
+    }
+    ReimbursementCategory {
+        BIGINT id PK
+        STRING name
+        TEXT description
+        DECIMAL maxLimit
+        BOOLEAN isActive
+        DATE createdAt
+        DATE updatedAt
+    }
+    ReimbursementClaim {
+        UUID id PK
+        UUID employeeId
+        BIGINT categoryId
+        DECIMAL amount
+        DATEONLY expenseDate
+        TEXT description
+        STRING receiptUrl
+        ENUM status
+        TEXT hrRemarks
+        TEXT financeRemarks
+        UUID hrApproverId
+        UUID financeApproverId
+        DATE createdAt
+        DATE updatedAt
+    }
+    ChatGroup {
+        UUID id PK
+        STRING name
+        UUID creatorId
+        DATE createdAt
+        DATE updatedAt
+    }
+    ChatGroupMember {
+        UUID id PK
+        UUID groupId
+        UUID userId
+        DATE createdAt
+        DATE updatedAt
+    }
+    Meeting {
+        UUID id PK
+        STRING title
+        DATE dateTime
+        TEXT agenda
+        STRING meetingLink
+        ENUM status
+        UUID organizerId
+        JSON targetAudience
+        JSON employeeReactions
+        DATE createdAt
+        DATE updatedAt
+    }
+    Company {
+        UUID id PK
+        STRING name
+        STRING address
+        STRING contactNumber
+        STRING logoUrl
+        STRING website
+        STRING contactEmail
+        STRING currency
+        STRING timezone
+        DATE createdAt
+        DATE updatedAt
+    }
+    AppConfig {
+        STRING key PK
+        TEXT value
+        DATE createdAt
+        DATE updatedAt
+    }
+    Image {
+        INTEGER id PK
+        STRING public_id
+        STRING url
+        STRING entity_type
+        INTEGER entity_id
+        STRING type
+        INTEGER size
+        STRING format
+        DATE createdAt
+        DATE updatedAt
+        DATE deletedAt
+    }
+    User }o--|| Role : "Role"
+    User ||--o| Employee : "Employee"
+    User ||--o{ Task : "Tasks"
+    User ||--o{ TaskActivity : "TaskActivities"
+    User ||--o{ TaskComment : "TaskComments"
+    User ||--o{ TaskAttachment : "TaskAttachments"
+    User ||--o{ Message : "SentMessages"
+    User ||--o{ Message : "ReceivedMessages"
+    User ||--o{ ChatGroup : "ChatGroups"
+    User ||--o{ ChatGroupMember : "ChatGroupMembers"
+    User ||--o{ Notification : "Notifications"
+    User ||--o{ ActivityLog : "ActivityLogs"
+    Role ||--o{ User : "Users"
+    Employee }o--|| User : "User"
+    Employee }o--|| Department : "Department"
+    Employee }o--|| Employee : "Manager"
+    Employee ||--o{ Employee : "Subordinates"
+    Employee ||--o{ Attendance : "Attendances"
+    Employee ||--o{ TaskAssignment : "TaskAssignments"
+    Employee ||--o{ LeaveRequest : "LeaveRequests"
+    Employee ||--o| SalaryComponent : "SalaryComponent"
+    Employee ||--o{ PayrollRecord : "PayrollRecords"
+    Employee ||--o{ Loan : "Loans"
+    Employee ||--o{ Grievance : "Grievances"
+    Employee ||--o{ ReimbursementClaim : "ReimbursementClaims"
+    Department ||--o{ Employee : "Employees"
+    Department ||--o{ Task : "Tasks"
+    Attendance }o--|| Employee : "Employee"
+    Attendance ||--o{ AttendanceActivity : "AttendanceActivities"
+    Task ||--o{ TaskAssignment : "TaskAssignments"
+    Task }o--|| User : "Creator"
+    Task ||--o{ TaskAttachment : "TaskAttachments"
+    Task ||--o{ TaskActivity : "TaskActivities"
+    Task ||--o{ TaskComment : "TaskComments"
+    Task }o--|| Department : "AssignedDepartment"
+    TaskAssignment }o--|| Task : "Task"
+    TaskAssignment }o--|| Employee : "Employee"
+    LeaveRequest }o--|| Employee : "Employee"
+    SalaryComponent }o--|| Employee : "Employee"
+    PayrollRecord }o--|| Employee : "Employee"
+    Loan }o--|| Employee : "Employee"
+    Grievance }o--|| Employee : "Employee"
+    Message }o--|| User : "Sender"
+    Message }o--|| User : "Recipient"
+    Message }o--|| ChatGroup : "ChatGroup"
+    ActivityLog }o--|| User : "User"
+    Notification }o--|| User : "User"
+    AttendanceActivity }o--|| Attendance : "Attendance"
+    TaskAttachment }o--|| Task : "Task"
+    TaskAttachment }o--|| User : "Uploader"
+    TaskActivity }o--|| Task : "Task"
+    TaskActivity }o--|| User : "User"
+    TaskComment }o--|| Task : "Task"
+    TaskComment }o--|| User : "User"
+    ReimbursementCategory ||--o{ ReimbursementClaim : "ReimbursementClaims"
+    ReimbursementClaim }o--|| ReimbursementCategory : "ReimbursementCategory"
+    ReimbursementClaim }o--|| Employee : "Employee"
+    ChatGroup }o--|| User : "Creator"
+    ChatGroup ||--o{ ChatGroupMember : "ChatGroupMembers"
+    ChatGroup ||--o{ Message : "Messages"
+    ChatGroupMember }o--|| ChatGroup : "ChatGroup"
+    ChatGroupMember }o--|| User : "User"

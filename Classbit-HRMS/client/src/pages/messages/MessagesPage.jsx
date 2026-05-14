@@ -514,7 +514,7 @@ const MessagesPage = () => {
                                                 // Extract base filename without query parameters for extension check
                                                 const urlWithoutQuery = cleanPath.split('?')[0];
                                                 const fileName = urlWithoutQuery.split('/').pop().replace(/^\d+-/, '') || 'Attachment';
-                                                const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName);
+                                                const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(fileName) || (msg.attachment && msg.attachment.includes('/image/upload/'));
                                                 return (
                                                     <div className={`mt-2 ${msg.content ? 'pt-2 border-t border-white/10' : ''}`}>
                                                         {isImage ? (

@@ -58,10 +58,12 @@ exports.createMeeting = async (req, res) => {
             if (email) {
                 await sendTemplatedEmail('MEETING_INVITE', email, {
                     employee_name: emp.firstName,
-                    meeting_title: title,
-                    meeting_time: new Date(dateTime).toLocaleString(),
-                    meeting_link: meetingLink || 'No direct link provided',
-                    agenda: agenda || 'No agenda provided'
+                    title: title,
+                    date: new Date(dateTime).toLocaleDateString(),
+                    time: new Date(dateTime).toLocaleTimeString(),
+                    link: meetingLink || 'No direct link provided',
+                    description: agenda || 'No agenda provided',
+                    company_name: 'Classbit HRMS'
                 }, 'Meetings-Module-Auto');
             }
         }
@@ -220,10 +222,12 @@ exports.sendMeetingEmail = async (req, res) => {
             if (email) {
                 const success = await sendTemplatedEmail('MEETING_INVITE', email, {
                     employee_name: emp.firstName,
-                    meeting_title: meeting.title,
-                    meeting_time: new Date(meeting.dateTime).toLocaleString(),
-                    meeting_link: meeting.meetingLink || 'No direct link provided',
-                    agenda: meeting.agenda || 'No agenda provided'
+                    title: meeting.title,
+                    date: new Date(meeting.dateTime).toLocaleDateString(),
+                    time: new Date(meeting.dateTime).toLocaleTimeString(),
+                    link: meeting.meetingLink || 'No direct link provided',
+                    description: meeting.agenda || 'No agenda provided',
+                    company_name: 'Classbit HRMS'
                 }, 'Meetings-Module');
                 if (success) sentCount++;
             }

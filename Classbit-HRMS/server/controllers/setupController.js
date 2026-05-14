@@ -185,12 +185,34 @@ const getCompany = async (req, res) => {
 
 const updateCompany = async (req, res) => {
     try {
+        let logoUrl = undefined;
+        if (req.file) {
+            try {
+                const cloudResult = await uploadToCloudinary(req.file.buffer, {
+                    folder: `hrms/company_logos`,
+                    resource_type: 'auto'
+                });
+                logoUrl = cloudinary.url(cloudResult.public_id, {
+                    secure: true,
+                    fetch_format: 'auto',
+                    quality: 'auto'
+                });
+            } catch (uploadError) {
+                console.error('Cloudinary upload failed for company logo:', uploadError);
+            }
+        }
+
+        const updateData = { ...req.body };
+        if (logoUrl !== undefined) {
+            updateData.logoUrl = logoUrl;
+        }
+
         const company = await Company.findOne();
         if (company) {
-            await company.update(req.body);
+            await company.update(updateData);
             res.json(company);
         } else {
-            const newCompany = await Company.create(req.body);
+            const newCompany = await Company.create(updateData);
             res.json(newCompany);
         }
     } catch (error) {

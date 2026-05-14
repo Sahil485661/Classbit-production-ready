@@ -12,6 +12,7 @@ const CompanySettings = () => {
         currency: 'USD',
         timezone: 'UTC-8 (Pacific Time)'
     });
+    const [logo, setLogo] = useState(null);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -45,18 +46,27 @@ const CompanySettings = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('token');
-            await axios.post('/api/setup/company', {
-                name: settings.companyName,
-                website: settings.website,
-                contactEmail: settings.contactEmail,
-                contactNumber: settings.phone,
-                address: settings.address,
-                currency: settings.currency,
-                timezone: settings.timezone
-            }, {
-                headers: { Authorization: `Bearer ${token}` }
+            const formData = new FormData();
+            formData.append('name', settings.companyName);
+            formData.append('website', settings.website);
+            formData.append('contactEmail', settings.contactEmail);
+            formData.append('contactNumber', settings.phone);
+            formData.append('address', settings.address);
+            formData.append('currency', settings.currency);
+            formData.append('timezone', settings.timezone);
+            if (logo) {
+                formData.append('logo', logo);
+            }
+
+            await axios.post('/api/setup/company', formData, {
+                headers: { 
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data'
+                }
             });
             alert('Settings saved successfully!');
+            // Refresh to get the new logo
+            window.location.reload();
         } catch (err) {
             alert('Failed to save settings');
         } finally {
@@ -124,6 +134,24 @@ const CompanySettings = () => {
                 </div>
 
                 <div className="space-y-6">
+                    <div>
+                        <label className={labelClass}>Company Logo</label>
+                        <div className="relative">
+                            <CloudUpload className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" />
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => {
+                                    if (e.target.files && e.target.files[0]) {
+                                        setLogo(e.target.files[0]);
+                                    }
+                                }}
+                                className="w-full bg-slate-900 border border-slate-700 rounded-xl py-2 pl-10 pr-4 text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/50 transition-all text-sm file:mr-4 file:py-1 file:px-3 file:rounded file:border-0 file:text-xs file:font-bold file:bg-blue-600/20 file:text-blue-400 hover:file:bg-blue-600/30"
+                            />
+                        </div>
+                        {logo && <p className="text-xs text-blue-400 mt-2 ml-1">New logo selected: {logo.name}</p>}
+                    </div>
+
                     <div>
                         <label className={labelClass}>Direct Phone Line</label>
                         <div className="relative">

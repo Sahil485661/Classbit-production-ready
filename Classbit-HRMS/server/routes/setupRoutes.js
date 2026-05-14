@@ -14,6 +14,6 @@ router.post('/send-token', sendSetupToken);
 router.use(protect);
 router.get('/', getSettings);
 router.post('/', authorize('Super Admin'), updateSetting);
-router.post('/company', authorize('Super Admin'), updateCompany);
+router.post('/company', authorize('Super Admin'), upload.single('logo'), updateCompany);
 
 module.exports = router;

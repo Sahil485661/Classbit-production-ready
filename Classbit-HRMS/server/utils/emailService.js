@@ -186,6 +186,117 @@ const initDefaultTemplates = async () => {
                     </div>
                 `,
                 description: 'Sent when a user requests a password reset OTP'
+            },
+            {
+                name: 'LOAN_APPROVAL',
+                subject: 'Loan Request Approved - {company_name}',
+                htmlBody: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                        <h2>Loan Request Approved</h2>
+                        <p>Hello {employee_name},</p>
+                        <p>Your loan request for <strong>{amount}</strong> has been approved.</p>
+                        <p>It will be deducted over <strong>{installments}</strong> installments.</p>
+                        <p>For more details, please visit the portal.</p>
+                        <br/>
+                        <p>Regards,<br/>{company_name} HR Team</p>
+                    </div>
+                `,
+                description: 'Sent when a loan is approved'
+            },
+            {
+                name: 'LOAN_REJECTION',
+                subject: 'Loan Request Rejected - {company_name}',
+                htmlBody: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                        <h2>Loan Request Rejected</h2>
+                        <p>Hello {employee_name},</p>
+                        <p>Unfortunately, your loan request for <strong>{amount}</strong> has been rejected.</p>
+                        <p>Please contact HR ({hr_contact}) for more information.</p>
+                        <br/>
+                        <p>Regards,<br/>{company_name} HR Team</p>
+                    </div>
+                `,
+                description: 'Sent when a loan is rejected'
+            },
+            {
+                name: 'LEAVE_APPROVAL',
+                subject: 'Leave Request Approved - {company_name}',
+                htmlBody: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                        <h2>Leave Request Approved</h2>
+                        <p>Hello {employee_name},</p>
+                        <p>Your leave request from <strong>{start_date}</strong> to <strong>{end_date}</strong> has been approved.</p>
+                        <p>Enjoy your time off!</p>
+                        <br/>
+                        <p>Regards,<br/>{company_name} HR Team</p>
+                    </div>
+                `,
+                description: 'Sent when a leave is approved'
+            },
+            {
+                name: 'LEAVE_REJECTION',
+                subject: 'Leave Request Rejected - {company_name}',
+                htmlBody: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                        <h2>Leave Request Rejected</h2>
+                        <p>Hello {employee_name},</p>
+                        <p>Your leave request from <strong>{start_date}</strong> to <strong>{end_date}</strong> has been rejected.</p>
+                        <p>Reason: {reason}</p>
+                        <p>Please contact HR for more information.</p>
+                        <br/>
+                        <p>Regards,<br/>{company_name} HR Team</p>
+                    </div>
+                `,
+                description: 'Sent when a leave is rejected'
+            },
+            {
+                name: 'REIMBURSEMENT_APPROVAL',
+                subject: 'Reimbursement Claim Approved - {company_name}',
+                htmlBody: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                        <h2>Reimbursement Approved</h2>
+                        <p>Hello {employee_name},</p>
+                        <p>Your reimbursement claim of <strong>{amount}</strong> has been approved.</p>
+                        <p>It will be credited to your account shortly.</p>
+                        <br/>
+                        <p>Regards,<br/>{company_name} HR Team</p>
+                    </div>
+                `,
+                description: 'Sent when a reimbursement is approved'
+            },
+            {
+                name: 'REIMBURSEMENT_REJECTION',
+                subject: 'Reimbursement Claim Rejected - {company_name}',
+                htmlBody: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                        <h2>Reimbursement Rejected</h2>
+                        <p>Hello {employee_name},</p>
+                        <p>Your reimbursement claim of <strong>{amount}</strong> has been rejected.</p>
+                        <p>Reason: {reason}</p>
+                        <br/>
+                        <p>Regards,<br/>{company_name} HR Team</p>
+                    </div>
+                `,
+                description: 'Sent when a reimbursement is rejected'
+            },
+            {
+                name: 'MEETING_INVITE',
+                subject: 'Meeting Invitation: {title} - {company_name}',
+                htmlBody: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+                        <h2>Meeting Invitation</h2>
+                        <p>Hello {employee_name},</p>
+                        <p>You have been invited to a meeting: <strong>{title}</strong></p>
+                        <p><strong>Date & Time:</strong> {date} at {time}</p>
+                        <p><strong>Link/Location:</strong> <a href="{link}">{link}</a></p>
+                        <p><strong>Description:</strong> {description}</p>
+                        <br/>
+                        <p>Please log in to your portal to accept or decline the meeting.</p>
+                        <br/>
+                        <p>Regards,<br/>{company_name} Team</p>
+                    </div>
+                `,
+                description: 'Sent when an employee is invited to a meeting'
             }
         ];
 
