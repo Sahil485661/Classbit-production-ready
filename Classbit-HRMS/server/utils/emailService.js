@@ -28,15 +28,35 @@ const getTransporter = async () => {
 
     const user = smtpConfig?.user || process.env.SMTP_USER;
     const pass = smtpConfig?.pass || process.env.SMTP_PASSWORD;
-    const service = smtpConfig?.service || process.env.SMTP_SERVICE || 'gmail';
+    const service = smtpConfig?.service || process.env.SMTP_SERVICE;
+    const host = smtpConfig?.host || process.env.SMTP_HOST;
+    const port = smtpConfig?.port || process.env.SMTP_PORT;
+    
+    let secure = false;
+    if (smtpConfig && smtpConfig.secure !== undefined) {
+        secure = smtpConfig.secure === true || smtpConfig.secure === 'true';
+    } else if (process.env.SMTP_SECURE !== undefined) {
+        secure = process.env.SMTP_SECURE === 'true';
+    }
 
-    return nodemailer.createTransport({
-        service,
+    const config = {
         auth: {
             user,
             pass
         }
-    });
+    };
+
+    if (service && service !== 'custom') {
+        config.service = service;
+    } else if (host) {
+        config.host = host;
+        config.port = port ? parseInt(port) : 587;
+        config.secure = secure;
+    } else {
+        config.service = 'gmail';
+    }
+
+    return nodemailer.createTransport(config);
 };
 
 /**
