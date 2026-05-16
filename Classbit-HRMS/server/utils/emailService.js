@@ -24,14 +24,7 @@ const getTransporter = async () => {
     const service = smtpConfig?.service || process.env.SMTP_SERVICE;
     
     // Auto-detect secure based on port if not explicitly set
-    let secure = false;
-    if (smtpConfig && smtpConfig.secure !== undefined) {
-        secure = smtpConfig.secure === true || smtpConfig.secure === 'true';
-    } else if (process.env.SMTP_SECURE !== undefined) {
-        secure = process.env.SMTP_SECURE === 'true';
-    } else if (port === 465) {
-        secure = true;
-    }
+    const secure = false;
 
     const config = {
         auth: { user, pass },
