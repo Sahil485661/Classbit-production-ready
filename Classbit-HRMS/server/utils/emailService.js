@@ -6,48 +6,37 @@ const nodemailer = require('nodemailer');
 const { EmailTemplate, EmailLog, Setting } = require('../models');
 
 const getTransporter = async () => {
-    // Try to get SMTP config from database settings first
     let smtpConfig = null;
+
     try {
-        const setting = await Setting.findOne({ where: { key: 'SMTP_CONFIG' } });
+        const setting = await Setting.findOne({
+            where: { key: 'SMTP_CONFIG' }
+        });
+
         if (setting && setting.value) {
-            smtpConfig = typeof setting.value === 'string' ? JSON.parse(setting.value) : setting.value;
+            smtpConfig =
+                typeof setting.value === 'string'
+                    ? JSON.parse(setting.value)
+                    : setting.value;
         }
     } catch (err) {
-        console.warn('Error fetching SMTP_CONFIG from DB, falling back to ENV:', err.message);
+        console.warn(
+            'Error fetching SMTP_CONFIG from DB, falling back to ENV:',
+            err.message
+        );
     }
 
-    const host = smtpConfig?.host || process.env.SMTP_HOST || 'smtp.gmail.com';
-    const port = parseInt(smtpConfig?.port || process.env.SMTP_PORT) || 587;
     const user = smtpConfig?.user || process.env.SMTP_USER;
     const pass = smtpConfig?.pass || process.env.SMTP_PASSWORD;
-    const service = smtpConfig?.service || process.env.SMTP_SERVICE;
-    
-    // Auto-detect secure based on port if not explicitly set
-    const secure = false;
+    const service = smtpConfig?.service || process.env.SMTP_SERVICE || 'gmail';
 
-    const config = {
-        auth: { user, pass },
-        connectionTimeout: 30000,
-        greetingTimeout: 30000,
-        socketTimeout: 30000,
-        family: 4, // Force IPv4
-        tls: {
-            rejectUnauthorized: false
-        },
-        debug: process.env.NODE_ENV === 'development',
-        logger: process.env.NODE_ENV === 'development'
-    };
-
-    if (service && service !== 'custom') {
-        config.service = service;
-    } else {
-        config.host = host;
-        config.port = port;
-        config.secure = secure;
-    }
-
-    return nodemailer.createTransport(config);
+    return nodemailer.createTransport({
+        service,
+        auth: {
+            user,
+            pass
+        }
+    });
 };
 
 /**
@@ -87,14 +76,6 @@ const sendTemplatedEmail = async (templateName, recipientEmail, variables, trigg
 
         const transporter = await getTransporter();
         
-        // Verify connection before sending
-        try {
-            await transporter.verify();
-            console.log(`SMTP Connection verified successfully for ${recipientEmail}`);
-        } catch (verifyError) {
-            console.error('SMTP Verification Failed:', verifyError.message);
-            throw new Error(`SMTP Verification Failed: ${verifyError.message}`);
-        }
 
         const mailOptions = {
             from: process.env.SMTP_USER,

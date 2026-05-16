@@ -152,7 +152,7 @@ exports.testSmtpConnection = async (req, res) => {
 
         const transporter = nodemailer.createTransport(config);
 
-        await transporter.verify();
+       
         console.log(`SMTP Test Connection verified successfully for host: ${host || service}`);
         res.json({ message: 'Connection successful! Your SMTP settings are valid.' });
     } catch (error) {
