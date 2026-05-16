@@ -142,7 +142,11 @@ exports.testSmtpConnection = async (req, res) => {
             }
         };
 
-        if (service && service !== 'custom') {
+        if (service === 'gmail') {
+            config.host = 'smtp.gmail.com';
+            config.port = 587;
+            config.secure = false;
+        } else if (service && service !== 'custom') {
             config.service = service;
         } else {
             config.host = host;

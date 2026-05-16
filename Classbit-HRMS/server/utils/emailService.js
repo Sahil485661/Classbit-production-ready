@@ -46,14 +46,20 @@ const getTransporter = async () => {
         }
     };
 
-    if (service && service !== 'custom') {
+    if (service === 'gmail') {
+        config.host = 'smtp.gmail.com';
+        config.port = 587;
+        config.secure = false;
+    } else if (service && service !== 'custom') {
         config.service = service;
     } else if (host) {
         config.host = host;
         config.port = port ? parseInt(port) : 587;
         config.secure = secure;
     } else {
-        config.service = 'gmail';
+        config.host = 'smtp.gmail.com';
+        config.port = 587;
+        config.secure = false;
     }
 
     return nodemailer.createTransport(config);
