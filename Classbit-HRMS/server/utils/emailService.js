@@ -28,41 +28,18 @@ const getTransporter = async () => {
 
     const user = smtpConfig?.user || process.env.SMTP_USER;
     const pass = smtpConfig?.pass || process.env.SMTP_PASSWORD;
-    const service = smtpConfig?.service || process.env.SMTP_SERVICE;
-    const host = smtpConfig?.host || process.env.SMTP_HOST;
-    const port = smtpConfig?.port || process.env.SMTP_PORT;
-    
-    let secure = false;
-    if (smtpConfig && smtpConfig.secure !== undefined) {
-        secure = smtpConfig.secure === true || smtpConfig.secure === 'true';
-    } else if (process.env.SMTP_SECURE !== undefined) {
-        secure = process.env.SMTP_SECURE === 'true';
-    }
+    const host = smtpConfig?.host || process.env.SMTP_HOST || 'smtp.resend.com';
+    const port = smtpConfig?.port || process.env.SMTP_PORT || 587;
 
-    const config = {
+    return nodemailer.createTransport({
+        host,
+        port: parseInt(port),
+        secure: false,
         auth: {
             user,
             pass
         }
-    };
-
-    if (service === 'gmail') {
-        config.host = 'smtp.gmail.com';
-        config.port = 587;
-        config.secure = false;
-    } else if (service && service !== 'custom') {
-        config.service = service;
-    } else if (host) {
-        config.host = host;
-        config.port = port ? parseInt(port) : 587;
-        config.secure = secure;
-    } else {
-        config.host = 'smtp.gmail.com';
-        config.port = 587;
-        config.secure = false;
-    }
-
-    return nodemailer.createTransport(config);
+    });
 };
 
 /**
@@ -104,7 +81,7 @@ const sendTemplatedEmail = async (templateName, recipientEmail, variables, trigg
         
 
         const mailOptions = {
-            from: process.env.SMTP_USER,
+            from: `"Classbit HRMS" <onboarding@resend.dev>`,
             to: recipientEmail,
             subject: finalSubject,
             html: finalBody
