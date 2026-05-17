@@ -46,26 +46,62 @@ const getTransporter = async () => {
         }
     };
 
-    if (service === 'gmail') {
+    if (service === 'resend' || host === 'smtp.resend.com') {
+        // Use Resend HTTP API to completely bypass Railway SMTP port blocking
+        return {
+            sendMail: (options) => {
+                return new Promise((resolve, reject) => {
+                    const https = require('https');
+                    const data = JSON.stringify({
+                        from: options.from || 'onboarding@resend.dev',
+                        to: Array.isArray(options.to) ? options.to : [options.to],
+                        subject: options.subject,
+                        html: options.html
+                    });
+
+                    const req = https.request('https://api.resend.com/emails', {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${pass}`,
+                            'Content-Type': 'application/json',
+                            'Content-Length': Buffer.byteLength(data)
+                        }
+                    }, (res) => {
+                        let body = '';
+                        res.on('data', chunk => body += chunk);
+                        res.on('end', () => {
+                            if (res.statusCode >= 200 && res.statusCode < 300) {
+                                try {
+                                    resolve({ messageId: JSON.parse(body).id });
+                                } catch (e) {
+                                    resolve({ messageId: 'resend-api-success' });
+                                }
+                            } else {
+                                reject(new Error(`Resend API Error: ${body}`));
+                            }
+                        });
+                    });
+
+                    req.on('error', reject);
+                    req.write(data);
+                    req.end();
+                });
+            }
+        };
+    } else if (service === 'gmail') {
         config.host = 'smtp.gmail.com';
         config.port = 587;
         config.secure = false;
-    } else if (service === 'resend') {
-        config.host = 'smtp.resend.com';
-        config.port = 2525; // Port 2525 bypasses Railway restrictions
-        config.secure = false;
-        if (!config.auth.user) config.auth.user = 'resend';
     } else if (service && service !== 'custom') {
         config.service = service;
     } else if (host) {
         config.host = host;
-        config.port = port ? parseInt(port) : 2525;
+        config.port = port ? parseInt(port) : 587;
         config.secure = secure;
     } else {
-        config.host = 'smtp.resend.com';
-        config.port = 2525;
+        config.host = 'smtp.gmail.com';
+        config.port = 587;
         config.secure = false;
-        if (!config.auth.user) config.auth.user = 'resend';
     }
 
     return nodemailer.createTransport(config);

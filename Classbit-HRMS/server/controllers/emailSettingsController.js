@@ -159,10 +159,32 @@ exports.testSmtpConnection = async (req, res) => {
             config.secure = secure === true || secure === 'true';
         }
 
-        const transporter = nodemailer.createTransport(config);
+        let transporter;
+        if (service === 'resend' || host === 'smtp.resend.com') {
+            transporter = {
+                verify: async () => {
+                    return new Promise((resolve, reject) => {
+                        const https = require('https');
+                        const req = https.request('https://api.resend.com/emails', {
+                            method: 'POST',
+                            headers: { 'Authorization': `Bearer ${pass}`, 'Content-Type': 'application/json' }
+                        }, (res) => {
+                            if (res.statusCode === 401 || res.statusCode === 403) {
+                                reject(new Error('Invalid Resend API Key'));
+                            } else {
+                                resolve(true);
+                            }
+                        });
+                        req.on('error', reject);
+                        req.end();
+                    });
+                }
+            };
+        } else {
+            transporter = nodemailer.createTransport(config);
+        }
 
-       
-        console.log(`SMTP Test Connection verified successfully for host: ${host || service}`);
+        await transporter.verify();
         res.json({ message: 'Connection successful! Your SMTP settings are valid.' });
     } catch (error) {
         console.error('SMTP Test Failed:', error.message);
