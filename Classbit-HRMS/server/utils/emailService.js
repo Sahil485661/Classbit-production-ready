@@ -26,20 +26,49 @@ const getTransporter = async () => {
         );
     }
 
+    const service = smtpConfig?.service || process.env.SMTP_SERVICE;
+    const host = smtpConfig?.host || process.env.SMTP_HOST;
+    const port = smtpConfig?.port || process.env.SMTP_PORT;
     const user = smtpConfig?.user || process.env.SMTP_USER;
     const pass = smtpConfig?.pass || process.env.SMTP_PASSWORD;
-    const host = smtpConfig?.host || process.env.SMTP_HOST || 'smtp.resend.com';
-    const port = smtpConfig?.port || process.env.SMTP_PORT || 587;
+    
+    let secure = false;
+    if (smtpConfig && smtpConfig.secure !== undefined) {
+        secure = smtpConfig.secure === true || smtpConfig.secure === 'true';
+    } else if (process.env.SMTP_SECURE !== undefined) {
+        secure = process.env.SMTP_SECURE === 'true';
+    }
 
-    return nodemailer.createTransport({
-        host,
-        port: parseInt(port),
-        secure: false,
+    const config = {
         auth: {
             user,
             pass
         }
-    });
+    };
+
+    if (service === 'gmail') {
+        config.host = 'smtp.gmail.com';
+        config.port = 587;
+        config.secure = false;
+    } else if (service === 'resend') {
+        config.host = 'smtp.resend.com';
+        config.port = 2525; // Port 2525 bypasses Railway restrictions
+        config.secure = false;
+        if (!config.auth.user) config.auth.user = 'resend';
+    } else if (service && service !== 'custom') {
+        config.service = service;
+    } else if (host) {
+        config.host = host;
+        config.port = port ? parseInt(port) : 2525;
+        config.secure = secure;
+    } else {
+        config.host = 'smtp.resend.com';
+        config.port = 2525;
+        config.secure = false;
+        if (!config.auth.user) config.auth.user = 'resend';
+    }
+
+    return nodemailer.createTransport(config);
 };
 
 /**

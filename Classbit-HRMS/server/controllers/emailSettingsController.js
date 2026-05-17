@@ -146,11 +146,16 @@ exports.testSmtpConnection = async (req, res) => {
             config.host = 'smtp.gmail.com';
             config.port = 587;
             config.secure = false;
+        } else if (service === 'resend') {
+            config.host = 'smtp.resend.com';
+            config.port = 2525;
+            config.secure = false;
+            if (!config.auth.user) config.auth.user = 'resend';
         } else if (service && service !== 'custom') {
             config.service = service;
         } else {
-            config.host = host;
-            config.port = parseInt(port);
+            config.host = host || 'smtp.resend.com';
+            config.port = parseInt(port) || 2525;
             config.secure = secure === true || secure === 'true';
         }
 
