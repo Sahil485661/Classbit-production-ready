@@ -478,11 +478,11 @@ const EmailSettingsView = () => {
                                         <UserIcon className="w-4 h-4" /> Email Address
                                     </label>
                                     <input 
-                                        type="email"
+                                        type="text"
                                         value={smtpConfig.user}
                                         onChange={e => setSmtpConfig({...smtpConfig, user: e.target.value})}
                                         className="w-full bg-[var(--card-bg)] border border-[var(--border-color)] rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500 transition-all"
-                                        placeholder="your-email@gmail.com"
+                                        placeholder="your-email@gmail.com or username"
                                         required
                                     />
                                 </div>
