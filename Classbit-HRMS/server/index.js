@@ -111,10 +111,10 @@ CLOUDINARY_API_SECRET=${cloudinarySecret || ''}
     app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
     // Serve frontend in normal mode
-    app.use(express.static(path.join(__dirname, '../client/dist')));
-    app.get(/.*/, (req, res) => {
-        res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-    });
+    //app.use(express.static(path.join(__dirname, '../client/dist')));
+    //app.get(/.*/, (req, res) => {
+        //res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+    //});
 
     // Error handling middleware
     app.use((err, req, res, next) => {
