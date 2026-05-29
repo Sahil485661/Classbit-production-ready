@@ -1,12 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://classbit-production-ready-backend.onrender.com/api/$1"
+      "source": "/api/:path*",
+      "destination": "https://classbit-production-ready-backend.onrender.com/api/:path*"
     },
     {
-      "source": "/uploads/(.*)",
-      "destination": "https://classbit-production-ready-backend.onrender.com/uploads/$1"
+      "source": "/uploads/:path*",
+      "destination": "https://classbit-production-ready-backend.onrender.com/uploads/:path*"
     },
     {
       "source": "/(.*)",
