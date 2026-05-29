@@ -28,6 +28,9 @@ if (!fs.existsSync('.env') && !process.env.DB_HOST) {
             setupTokenRequired: false
         });
     });
+    app.get('/health', (req, res) => {
+        res.status(200).json({ status: 'ok' });
+    });
 
     app.post('/api/setup/env', (req, res) => {
         const { dbHost, dbPort, dbUser, dbPassword, dbName, smtpUser, smtpPassword, nodeEnv, cloudinaryName, cloudinaryKey, cloudinarySecret } = req.body;
