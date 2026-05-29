@@ -82,6 +82,9 @@ CLOUDINARY_API_SECRET=${cloudinarySecret || ''}
     // ==========================================
     // NORMAL MODE (.env exists)
     // ==========================================
+    app.get('/health', (req, res) => {
+        res.status(200).json({ status: 'ok' });
+    });
     const { connectDB, sequelize } = require('./config/db');
     const models = require('./models');
 
