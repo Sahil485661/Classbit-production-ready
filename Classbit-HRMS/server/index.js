@@ -82,11 +82,19 @@ CLOUDINARY_API_SECRET=${cloudinarySecret || ''}
     // ==========================================
     // NORMAL MODE (.env exists)
     // ==========================================
-    app.get('/health', (req, res) => {
-        res.status(200).json({ status: 'ok' });
-    });
     const { connectDB, sequelize } = require('./config/db');
     const models = require('./models');
+
+    // Updated Health Route (Render + Aiven Keep-Alive)
+    app.get('/health', async (req, res) => {
+        try {
+            await sequelize.authenticate();
+            res.status(200).json({ status: 'ok', database: 'connected' });
+        } catch (error) {
+            console.error('Health Check - DB Ping Failed:', error.message);
+            res.status(500).json({ status: 'error', message: 'Database connection failed' });
+        }
+    });
 
     // Routes
     app.use('/api/auth', require('./routes/authRoutes'));
